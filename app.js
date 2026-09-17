@@ -21,6 +21,17 @@
   const dashboardStats=document.getElementById('dashboardStats');
   if(dashboardStats){const s=overallStats();dashboardStats.innerHTML=`<div><b>${s.percent}%</b><span>course complete</span></div><div><b>${s.done}/${s.total}</b><span>lessons complete</span></div><div><b>${s.unlocked}/${phases.length}</b><span>phases unlocked</span></div>`;}
 
+  const journey=document.getElementById('journey');
+  if(journey){journey.innerHTML=phases.map((p,i)=>`<div class="journey-row"><div class="journey-line"></div><span class="journey-num">${p[0]}</span><div class="journey-copy"><b>${p[1]}</b><span>${p[2]}</span></div><a class="btn" href="curriculum.html#phase-${p[0]}">${i===0?'Start':'Open'} →</a></div>`).join('');}
+
+  const cloudStatus=document.getElementById('cloudStatus');
+  if(cloudStatus){
+    const setCloudStatus=(text)=>{cloudStatus.textContent=text;};
+    window.addEventListener('puneeth:authready',e=>{setCloudStatus(e.detail?.user?'Your progress is synced to your free account.':'Your progress is currently saved in this browser. Create a free account if you want optional cloud sync.');});
+    window.addEventListener('puneeth:authchange',e=>{setCloudStatus(e.detail?.user?'Your progress is synced to your free account.':'Your progress is currently saved in this browser. Create a free account if you want optional cloud sync.');});
+    window.addEventListener('puneeth:cloudsynced',()=>setCloudStatus('Your progress is synced to your free account.'));
+  }
+
   const grid=document.getElementById('phaseGrid');
   if(grid){grid.innerHTML=phases.map(p=>{const done=completedLessons(p), complete=phaseComplete(p[0]), unlocked=phaseUnlocked(p[0]);return `<a class="phase-card ${!unlocked?'locked':''}" href="curriculum.html#phase-${p[0]}"><span class="phase-num">${p[0]}</span><h3>${p[1]}</h3><p>${p[2]}</p><div class="card-meta">${done}/${p[3].length} lessons ${complete?'· ✓ complete':!unlocked?'· 🔒 locked':''}</div></a>`}).join('')}
 
