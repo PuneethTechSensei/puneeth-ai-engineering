@@ -6,7 +6,7 @@ A free, step-by-step AI Engineering learning platform by Puneeth.
 
 - Core learning remains free.
 - Learners can start without an account.
-- Guided progression: **Learn → Practice → Prove → Progress**.
+- Guided progression: **Learn → Experiment → Build → Break → Prove → Progress**.
 - Locked phases can be previewed without being marked complete.
 - Prefer free, open-source and local tooling wherever practical.
 - Collect only information needed for optional learning sync and privacy-friendly analytics.
@@ -60,3 +60,12 @@ This project is intentionally static. The existing GitHub → Vercel pipeline ca
 ## Content V1
 
 Phases 02–05 now contain authored lessons with explanations, hands-on practice, proof tasks, common mistakes and further reading. Phase assessments use 10 questions with an 80% pass threshold and randomized answer positions.
+
+
+## Learning Experience Engine V3
+
+Lessons now use an evidence-based learning loop: **Learn → Experiment → Build → Break → Prove → Progress**.
+
+For authored lessons, learners see a lesson-specific engineering mission, required evidence, a deliberate failure case, three mastery self-checks, and a proof-of-work field. Evidence is stored locally and the lesson completion gate opens only after evidence is saved.
+
+The platform intentionally does not treat a generic “Practice” prompt as mastery. Future content stages should continue adding domain-specific labs, debugging incidents, design decisions, and eventually automated validation.

@@ -25,4 +25,4 @@ The platform should teach the skills needed by a broad AI Engineer first. Comput
 
 ## Learning rule
 
-Every phase follows: Learn → Practice → Prove → Progress. A learner should be able to explain the concept, implement a minimal example, test or evaluate it, and describe at least one production failure mode before moving forward.
+Every phase follows: Learn → Experiment → Build → Break → Prove → Progress. A learner should be able to explain the concept, implement a minimal example, test or evaluate it, and describe at least one production failure mode before moving forward.
