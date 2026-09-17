@@ -35,12 +35,12 @@ The website works without Supabase. If you want cross-device sync:
 1. Create a free Supabase project.
 2. Open the Supabase SQL Editor.
 3. Run `supabase-setup.sql`.
-4. Open `supabase-config.js`.
-5. Replace the placeholder project URL and publishable key.
-6. Commit the change to GitHub.
+4. In Vercel, open **Project Settings → Environment Variables**.
+5. Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` for Production (and Preview if desired).
+6. Redeploy. The Vercel build generates `supabase-config.js` automatically.
 7. Vercel automatically deploys the update.
 
-Use only the **publishable/anon** key in the browser. Never put a `service_role` or secret key in `supabase-config.js`.
+Use only the **publishable** key (`sb_publishable_...`) in the browser. Never put a `service_role` or `sb_secret_...` key in browser code.
 
 Supabase's browser client supports persistent sessions, and its Data API should be protected with Row Level Security. The included SQL enables RLS and limits each learner to their own progress and event rows.
 
