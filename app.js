@@ -19,10 +19,32 @@
   if(navStats){const s=overallStats();navStats.textContent=`${s.percent}% complete`;}
 
   const dashboardStats=document.getElementById('dashboardStats');
-  if(dashboardStats){const s=overallStats();dashboardStats.innerHTML=`<div><b>${s.percent}%</b><span>course complete</span></div><div><b>${s.done}/${s.total}</b><span>lessons complete</span></div><div><b>${s.unlocked}/${phases.length}</b><span>phases unlocked</span></div>`;}
+  const getCurrentPhase=()=>{
+    const unlocked=phases.filter(p=>phaseUnlocked(p[0]));
+    const active=unlocked.find(p=>!phaseComplete(p[0]));
+    return active || phases[phases.length-1];
+  };
+  if(dashboardStats){
+    const s=overallStats();
+    const active=getCurrentPhase();
+    const activeDone=completedLessons(active);
+    const activePct=Math.round(activeDone/active[3].length*100);
+    dashboardStats.innerHTML=`<div class="dashboard-stat"><span class="stat-value">${s.percent}%</span><span class="stat-label">Course complete</span><span class="stat-note">Keep your streak moving</span></div><div class="dashboard-stat"><span class="stat-value">${s.done}</span><span class="stat-label">Lessons complete</span><span class="stat-note">Across ${phases.length} phases</span></div><div class="dashboard-stat"><span class="stat-value">${s.unlocked}/${phases.length}</span><span class="stat-label">Phases unlocked</span><span class="stat-note">Next unlock follows your assessment</span></div><div class="dashboard-stat"><span class="stat-value">${activePct}%</span><span class="stat-label">Current phase</span><span class="stat-note">${active[1]}</span></div>`;
+    const ring=document.querySelector('.orb-ring'); if(ring) ring.style.setProperty('--progress',`${s.percent}%`);
+    const hp=document.getElementById('heroPercent'); if(hp) hp.textContent=`${s.percent}%`;
+    const hphase=document.getElementById('heroPhase'); if(hphase) hphase.textContent=`Phase ${active[0]}`;
+    const htitle=document.getElementById('heroPhaseTitle'); if(htitle) htitle.textContent=active[1];
+    const pill=document.getElementById('continuePill'); if(pill) pill.textContent=`PHASE ${active[0]}`;
+    const title=document.getElementById('continueTitle'); if(title) title.textContent=active[1];
+    const desc=document.getElementById('continueDescription'); if(desc) desc.textContent=active[2];
+    const count=document.getElementById('continueCount'); if(count) count.textContent=`${activeDone} / ${active[3].length} lessons`;
+    const pct=document.getElementById('continuePercent'); if(pct) pct.textContent=`${activePct}%`;
+    const bar=document.getElementById('continueBar'); if(bar) bar.style.width=`${activePct}%`;
+    const btn=document.getElementById('continueBtn'); if(btn) btn.href=`curriculum.html#phase-${active[0]}`;
+  }
 
   const journey=document.getElementById('journey');
-  if(journey){journey.innerHTML=phases.map((p,i)=>`<div class="journey-row"><div class="journey-line"></div><span class="journey-num">${p[0]}</span><div class="journey-copy"><b>${p[1]}</b><span>${p[2]}</span></div><a class="btn" href="curriculum.html#phase-${p[0]}">${i===0?'Start':'Open'} →</a></div>`).join('');}
+  if(journey){journey.innerHTML=phases.map((p,i)=>{const done=completedLessons(p),complete=phaseComplete(p[0]),unlocked=phaseUnlocked(p[0]);return `<div class="journey-row ${complete?'journey-complete':''}"><span class="journey-num">${complete?'✓':p[0]}</span><div class="journey-copy"><b>${p[1]}</b><span>${p[2]}</span><small>${done}/${p[3].length} lessons ${complete?'· Complete':unlocked?'· Available':'· Locked'}</small></div><a class="btn" href="curriculum.html#phase-${p[0]}">${i===0?'Start':unlocked?'Open':'Preview'} →</a></div>`}).join('');}
 
   const cloudStatus=document.getElementById('cloudStatus');
   if(cloudStatus){
