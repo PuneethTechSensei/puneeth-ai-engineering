@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
   "buildCommand": "node vercel-build.js",
+  "outputDirectory": "public",
   "headers": [
     {
       "source": "/(.*)",
