@@ -1,4 +1,4 @@
-# Puneeth AI Engineering
+# AI Engineering by TechSensei
 
 A free, step-by-step AI Engineering learning platform by Puneeth.
 
