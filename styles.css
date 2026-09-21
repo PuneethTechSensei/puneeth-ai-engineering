@@ -57,3 +57,9 @@
 .practice-explanation{margin-top:14px;padding:14px 16px;border-left:3px solid currentColor;background:rgba(127,127,127,.06);border-radius:8px}
 .practice-explanation p{margin:.45rem 0 0}
 .latex-note{display:block;margin-top:10px;white-space:pre-wrap}
+
+/* Stable curriculum visuals */
+.module-banner{margin:28px 0 34px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#0b1020;box-shadow:0 14px 38px rgba(0,0,0,.10)}
+.module-banner img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+.atlas-card img{aspect-ratio:16/9;object-fit:cover;min-height:220px}
+@media(max-width:760px){.module-banner{border-radius:14px}.atlas-card img{min-height:0}}
