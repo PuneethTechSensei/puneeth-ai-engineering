@@ -60,33 +60,18 @@ If Supabase is not configured, learners can still use the entire curriculum. Pro
 This project is intentionally static. The existing GitHub → Vercel pipeline can deploy it without a build step.
 
 
-## Content V1
+## PromptFix V8 editorial rewrite
 
-Phases 02–05 now contain authored lessons with explanations, hands-on practice, proof tasks, common mistakes and further reading. Phase assessments use 10 questions with an 80% pass threshold and randomized answer positions.
+The V8 content pass is a full lesson-quality rewrite of the current 150-lesson map. Every lesson now has a topic-matched problem statement, mental model, worked example, hands-on experiment, deliberate failure, proof requirement, transfer statement, common mistakes and references where useful. The renderer presents these as a real learning sequence rather than generic “what you will learn” scaffolding.
 
+The progression engine now requires saved lab evidence before a lesson can be marked complete. Phase assessments use five applied questions with balanced answer positions rather than vocabulary-only recall. Fast-moving areas carry freshness notes and primary references.
 
-## Learning Experience Engine V3
+## Editorial quality gate
 
-Lessons now use an evidence-based learning loop: **Learn → Experiment → Build → Break → Prove → Progress**.
+A lesson is not considered ready merely because it has a title or code sample. The project standard is: **problem → mental model → experiment → build → break → prove → transfer**. If the learner can click complete without doing observable work, the lesson fails the quality gate.
 
-For authored lessons, learners see a lesson-specific engineering mission, required evidence, a deliberate failure case, three mastery self-checks, and a proof-of-work field. Evidence is stored locally and the lesson completion gate opens only after evidence is saved.
-
-The platform intentionally does not treat a generic “Practice” prompt as mastery. Future content stages should continue adding domain-specific labs, debugging incidents, design decisions, and eventually automated validation.
-
-
-## Learning Experience V4
-This version uses the Learn → Experiment → Build → Break → Prove → Progress model, requires concrete proof-of-work for authored lessons, and treats Computer Vision, LLM Internals and Multimodal AI as optional specializations that do not block the core path. See `LEARNING_EXPERIENCE_PLAN.md`.
-
-
-## Agent systems visual references
-Phase 14 includes learner-supplied reference visuals for ten agent engineering concepts. They are displayed with source credit and used as prompts for architecture analysis; they are not presented as original Puneeth AI Engineering artwork.
-
-
-## Learning-experience V6
-
-V6 treats each lesson as a competency exercise rather than a reading page. Labs have explicit artifacts, prerequisites, success criteria, failure modes and evidence prompts. Saved evidence is local-first and can be exported as Markdown. The platform deliberately describes this as self-reported evidence rather than independently verified mastery.
-
+V8 is a curriculum/content implementation pass, not a claim that the site is independently accredited or that every external dependency will remain unchanged. Current tooling should always be checked against its primary documentation.
 
 ## Final curriculum shape
 
-This release intentionally reduces the curriculum from 200 to **150 focused lessons**. The platform has **20 phases: 17 core + 3 optional specializations**. Computer Vision, LLM Internals & Training, and Multimodal AI are valuable but do not block the general AI Engineer path. See `CURRICULUM_FINAL_DECISION.md`, `BLINDSPOT_FINAL.md` and `PROMPTFIX_FINAL.md`.
+This release intentionally keeps the curriculum at **150 focused lessons** across **20 phases: 17 core + 3 optional specializations**. The optional phases are Computer Vision (05), LLM Internals & Training (09), and Multimodal AI (12). They remain available but do not block the core AI Engineer path.

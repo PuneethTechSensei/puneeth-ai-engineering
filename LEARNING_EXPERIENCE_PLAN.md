@@ -1,20 +1,21 @@
 # Puneeth AI Engineering — Learning Experience Plan
 
 ## Audit decision
-The platform should optimize for demonstrated engineering capability, not lesson count. The current curriculum map has 200 lessons; 60 are fully authored with hands-on experiences in the current build. The remaining lessons should not be treated as finished content until they meet the same quality gate.
+The curriculum map is fixed at **150 lessons** for this release. The editorial problem is no longer lesson count; it is whether each lesson teaches a concrete capability and produces evidence of practice. V8 therefore rewrites the current 150 lesson records instead of adding more topic slots.
 
 ## Learning model
-**Learn → Experiment → Build → Break → Prove → Progress**
+**Problem → Learn → Experiment → Build → Break → Prove → Transfer**
 
-- Learn: mental model, intuition, terminology, architecture.
-- Experiment: predict, run, observe, vary one controlled factor.
+- Problem: start with a realistic engineering situation.
+- Learn: build the mental model needed to reason about it.
+- Experiment: predict, run, observe and vary one controlled factor.
 - Build: create the smallest useful implementation.
 - Break: introduce a realistic failure or edge case and diagnose it.
 - Prove: produce concrete evidence and explain the result.
-- Progress: unlock the next core skill only after evidence + phase assessment.
+- Transfer: identify where the capability reappears in a later system.
 
 ## Evidence standard
-A learner should normally leave a lesson with four pieces of evidence appropriate to the activity type: prediction/plan, result, explanation/diagnosis, and transfer/decision. The prompts must be specific to the activity rather than generic “complete the exercise” language.
+A learner should normally leave a lesson with four pieces of evidence appropriate to the activity: prediction/plan, result, explanation/diagnosis, and transfer/decision. The prompts must be specific to the lesson rather than generic completion language.
 
 ## Instructional basis
 - Retrieval practice is supported by a substantial literature base, especially when learners must recall rather than only recognize and receive feedback.
