@@ -13,8 +13,8 @@ A free, step-by-step AI Engineering learning platform by Puneeth.
 
 ## Current platform
 
-- 20 guided phases
-- 200 starter lessons
+- 20 phases: 17 core + 3 optional specializations
+- 150 focused lessons with engineering labs
 - Phase assessments
 - Browser-local progress tracking
 - Optional Supabase learner account and cross-device progress sync
@@ -22,6 +22,9 @@ A free, step-by-step AI Engineering learning platform by Puneeth.
 - Creator Center with analytics setup guidance
 - Dark/light mode
 - Search and curriculum filters
+- Engineering Proof Portfolio with local export
+- Original Agent Systems Visual Atlas
+- Self-check mastery contracts and phase-aware lab metadata
 - Responsive static site
 
 ## Free analytics
@@ -69,3 +72,21 @@ Lessons now use an evidence-based learning loop: **Learn → Experiment → Buil
 For authored lessons, learners see a lesson-specific engineering mission, required evidence, a deliberate failure case, three mastery self-checks, and a proof-of-work field. Evidence is stored locally and the lesson completion gate opens only after evidence is saved.
 
 The platform intentionally does not treat a generic “Practice” prompt as mastery. Future content stages should continue adding domain-specific labs, debugging incidents, design decisions, and eventually automated validation.
+
+
+## Learning Experience V4
+This version uses the Learn → Experiment → Build → Break → Prove → Progress model, requires concrete proof-of-work for authored lessons, and treats Computer Vision, LLM Internals and Multimodal AI as optional specializations that do not block the core path. See `LEARNING_EXPERIENCE_PLAN.md`.
+
+
+## Agent systems visual references
+Phase 14 includes learner-supplied reference visuals for ten agent engineering concepts. They are displayed with source credit and used as prompts for architecture analysis; they are not presented as original Puneeth AI Engineering artwork.
+
+
+## Learning-experience V6
+
+V6 treats each lesson as a competency exercise rather than a reading page. Labs have explicit artifacts, prerequisites, success criteria, failure modes and evidence prompts. Saved evidence is local-first and can be exported as Markdown. The platform deliberately describes this as self-reported evidence rather than independently verified mastery.
+
+
+## Final curriculum shape
+
+This release intentionally reduces the curriculum from 200 to **150 focused lessons**. The platform has **20 phases: 17 core + 3 optional specializations**. Computer Vision, LLM Internals & Training, and Multimodal AI are valuable but do not block the general AI Engineer path. See `CURRICULUM_FINAL_DECISION.md`, `BLINDSPOT_FINAL.md` and `PROMPTFIX_FINAL.md`.
