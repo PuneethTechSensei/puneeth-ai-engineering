@@ -59,16 +59,16 @@ const curriculumContentUpdateQuestions = [
   {
     "id": "05-CV-001",
     "topic": "Computer Vision — convolution arithmetic",
-    "questionText": "An image tensor has spatial size $32\\\\times32$. A 2D convolution uses kernel size $5$, stride $1$, and no padding. What spatial size should the output have?",
+    "questionText": "An image tensor has spatial size $32\\times32$. A 2D convolution uses kernel size $5$, stride $1$, and no padding. What spatial size should the output have?",
     "options": [
-      "$32\\\\times32$",
-      "$30\\\\times30$",
-      "$28\\\\times28$",
-      "$36\\\\times36$"
+      "$32\\times32$",
+      "$30\\times30$",
+      "$28\\times28$",
+      "$36\\times36$"
     ],
-    "correctAnswer": "$28\\\\times28$",
-    "hint": "Use $\\\\text{out}=\\\\left\\\\lfloor\\\\frac{n+2p-d(k-1)-1}{s}+1\\\\right\\\\rfloor$ with $p=0$, $d=1$, and $s=1$.",
-    "explanation": "For one spatial dimension, the convolution output is $\\\\lfloor(n+2p-d(k-1)-1)/s+1\\\\rfloor$. Substituting n=32, p=0, d=1, k=5, and s=1 gives 28. Because the kernel cannot extend outside the image when there is no padding, each spatial dimension shrinks from 32 to 28."
+    "correctAnswer": "$28\\times28$",
+    "hint": "Use $\\text{out}=\\left\\lfloor\\frac{n+2p-d(k-1)-1}{s}+1\\right\\rfloor$ with $p=0$, $d=1$, and $s=1$.",
+    "explanation": "For one spatial dimension, the convolution output is $\\lfloor(n+2p-d(k-1)-1)/s+1\\rfloor$. Substituting n=32, p=0, d=1, k=5, and s=1 gives 28. Because the kernel cannot extend outside the image when there is no padding, each spatial dimension shrinks from 32 to 28."
   },
   {
     "id": "05-CV-002",
@@ -82,7 +82,7 @@ const curriculumContentUpdateQuestions = [
     ],
     "correctAnswer": "IoU = 0.4; the predicted box overlaps the ground truth by a larger fraction of their union.",
     "hint": "IoU is intersection divided by union, not intersection divided by ground-truth area.",
-    "explanation": "Intersection over Union is $\\\\mathrm{IoU}=\\\\frac{|A\\\\cap B|}{|A\\\\cup B|}$. With intersection 40 and union 100, IoU is 0.4. Higher IoU generally means tighter spatial overlap between prediction and ground truth. It is not classification accuracy or recall. IoU is bounded between 0 and 1 for ordinary bounding boxes."
+    "explanation": "Intersection over Union is $\\mathrm{IoU}=\\frac{|A\\cap B|}{|A\\cup B|}$. With intersection 40 and union 100, IoU is 0.4. Higher IoU generally means tighter spatial overlap between prediction and ground truth. It is not classification accuracy or recall. IoU is bounded between 0 and 1 for ordinary bounding boxes."
   },
   {
     "id": "14-AG-001",
