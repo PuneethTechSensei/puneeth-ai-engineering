@@ -1,0 +1,32 @@
+(function(){
+  const sets=window.PuneethPracticeSets||{};
+  const params=new URLSearchParams(location.search);
+  const phase=params.get('phase')||'00';
+  const set=phase==='00'?sets['python-runtime']:null;
+  const root=document.getElementById('assessmentContent');
+  if(!root||!set)return;
+  const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+  const stateKey='puneeth-practice-'+set.quizId;
+  const read=()=>{try{return JSON.parse(localStorage.getItem(stateKey)||'{}')}catch{return{}}};
+  const saved=read();
+  const section=document.createElement('section');
+  section.className='practice-set';
+  section.innerHTML='<div class="eyebrow">PRACTICE · '+esc(set.topic.toUpperCase())+'</div><h2>'+esc(set.title)+'</h2><p class="lead">Applied practice is separate from the phase gate. Work the scenario, choose an answer, then inspect the explanation and retry.</p><div id="practiceProgress" class="practice-progress"></div>'+set.questions.map((q,i)=>'<fieldset class="question practice-question"><legend>'+ (i+1)+'. '+esc(q.q)+'</legend>'+q.options.map((o,j)=>'<label><input type="radio" name="practice-'+esc(q.id)+'" value="'+j+'"> '+esc(o)+'</label>').join('')+'<div class="practice-explanation" id="ex-'+esc(q.id)+'" hidden><b>Why</b><p>'+esc(q.explanation)+'</p>'+(q.latex?'<code class="latex-note">'+esc(q.latex)+'</code>':'')+'</div></fieldset>').join('')+'<button class="btn" id="checkPractice">Check practice answers</button><div id="practiceResult"></div>';
+  root.appendChild(section);
+  const progress=section.querySelector('#practiceProgress');
+  if(saved.score!==undefined)progress.textContent='Latest attempt: '+saved.score+'/'+saved.maxScore+' · '+saved.elapsedSeconds+'s';
+  let started=Date.now();
+  section.querySelector('#checkPractice').onclick=async()=>{
+    const answers={};let score=0;
+    set.questions.forEach(q=>{const el=section.querySelector('input[name="practice-'+q.id+'"]:checked');answers[q.id]=el?Number(el.value):null;if(el&&Number(el.value)===q.answer)score++;section.querySelector('#ex-'+q.id).hidden=false});
+    const elapsedSeconds=Math.max(1,Math.round((Date.now()-started)/1000));
+    localStorage.setItem(stateKey,JSON.stringify({score,maxScore:set.questions.length,elapsedSeconds,answers,completedAt:new Date().toISOString()}));
+    progress.textContent='Latest attempt: '+score+'/'+set.questions.length+' · '+elapsedSeconds+'s';
+    const result=section.querySelector('#practiceResult');
+    result.className='result '+(score===set.questions.length?'success':'retry');
+    result.innerHTML='<h3>'+(score===set.questions.length?'✓ Practice complete':'Review, diagnose and retry')+'</h3><p>You scored '+score+'/'+set.questions.length+'. The explanations are revealed so the learner can reason about the failure instead of memorizing an answer key.</p>';
+    window.PuneethAuth?.logEvent?.('practice_attempt',{quizId:set.quizId,phase:set.phaseId,score,maxScore:set.questions.length,elapsedSeconds});
+    if(window.PuneethAppwrite?.configured?.()) await window.PuneethAppwrite.saveQuizAttempt({quizId:set.quizId,phaseId:set.phaseId,topic:set.topic,score,maxScore:set.questions.length,elapsedSeconds,answers});
+  };
+  started=Date.now();
+})();
