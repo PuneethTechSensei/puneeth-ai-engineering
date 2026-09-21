@@ -1,6 +1,6 @@
 # Puneeth AI Engineering
 
-A free, step-by-step AI Engineering learning platform by Puneeth.
+A free, step-by-step AI Engineering learning platform by TechSensei.
 
 ## Core principles
 
