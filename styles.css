@@ -49,3 +49,11 @@
 
 /* V9 editorial layer */
 .lesson-skill-v9{margin:24px 0 30px}.decision-box{margin-top:16px;padding:14px 16px;border-left:3px solid #214dff;background:var(--surface,#fafafa)}.decision-box p{margin:6px 0 0}.guided-steps{max-width:78ch;padding-left:22px}.guided-steps li{margin:10px 0;line-height:1.6}
+
+/* Applied practice */
+.practice-set{margin-top:48px;padding-top:32px;border-top:1px solid var(--border,#dfe3e8)}
+.practice-progress{margin:12px 0 20px;font-size:.9rem;color:var(--muted,#667085)}
+.practice-question{position:relative}
+.practice-explanation{margin-top:14px;padding:14px 16px;border-left:3px solid currentColor;background:rgba(127,127,127,.06);border-radius:8px}
+.practice-explanation p{margin:.45rem 0 0}
+.latex-note{display:block;margin-top:10px;white-space:pre-wrap}
