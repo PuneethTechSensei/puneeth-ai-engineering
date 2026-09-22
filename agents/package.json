@@ -1,0 +1,7 @@
+{
+  "name": "techsensei-agent-system",
+  "private": true,
+  "type": "module",
+  "scripts": { "agent": "node src/run.js" },
+  "dependencies": { "@openai/agents": "^0.3.0", "zod": "^4.1.0" }
+}
