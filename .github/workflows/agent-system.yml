@@ -1,0 +1,41 @@
+name: TechSensei Agent System
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "Engineering task for the agent system"
+        required: true
+        type: string
+      allow_changes:
+        description: "Allow repository file changes in the checked-out workspace"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  agents:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install agent dependencies
+        working-directory: agents
+        run: npm install
+      - name: Run TechSensei agents
+        working-directory: agents
+        env:
+          OPENAI_API_KEY: \${{ secrets.OPENAI_API_KEY }}
+          AGENT_MODEL: gpt-5.4
+          AGENT_TASK: \${{ inputs.task }}
+          AGENT_ALLOW_WRITE: \${{ inputs.allow_changes }}
+        run: npm run agent
