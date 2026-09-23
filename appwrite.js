@@ -63,6 +63,42 @@
     }
   }
 
+  async function getProtectedLesson(lessonId, version = "v1") {
+    const user = await currentUser();
+    if (!user || !functions || !cfg.protectedLessonFunctionId) {
+      return { ok: false, reason: "not-authenticated" };
+    }
+
+    try {
+      const path = "/?lessonId=" + encodeURIComponent(lessonId) +
+        "&version=" + encodeURIComponent(version);
+
+      const execution = await functions.createExecution({
+        functionId: cfg.protectedLessonFunctionId,
+        body: "",
+        async: false,
+        method: "GET",
+        path
+      });
+
+      let body = null;
+      try { body = JSON.parse(execution.responseBody || "{}"); } catch (_) {}
+
+      if (execution.responseStatusCode >= 400 || !body?.content) {
+        return {
+          ok: false,
+          reason: body?.error || "lesson-rejected",
+          status: execution.responseStatusCode
+        };
+      }
+
+      return { ok: true, content: body.content };
+    } catch (error) {
+      console.warn("Protected lesson load failed:", error);
+      return { ok: false, reason: error?.message || "lesson-load-failed" };
+    }
+  }
+
   async function listPublicPracticeQuestions(quizId, version = "v1") {
     if (!tablesDB) return [];
     try {
@@ -86,6 +122,7 @@
     configured: () => configured,
     currentUser,
     submitAssessment,
+    getProtectedLesson,
     listPublicPracticeQuestions
   };
 })();
