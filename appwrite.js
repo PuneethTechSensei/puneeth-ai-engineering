@@ -67,15 +67,24 @@
     });
   }
 
-  async function getAssessmentQuestions(phaseId) {
-    const quizId="phase-"+phaseId+"-assessment-v1";
-    const rows=await listPublicPracticeQuestions(quizId,"v1");
-    const questions=rows.map(r=>{
+  function parseQuestions(rows) {
+    return rows.map(r=>{
       const d=r.data||r;
       let options=[]; try { options=JSON.parse(d.optionsJson||"[]"); } catch (_) {}
-      return {questionId:d.questionId,questionText:d.questionText,options};
+      return {questionId:d.questionId,questionText:d.questionText,options,explanation:d.explanation||""};
     }).sort((a,b)=>String(a.questionId).localeCompare(String(b.questionId)));
-    return questions.length ? {ok:true,questions,passPercent:80} : {ok:false,error:"Assessment not found"};
+  }
+
+  async function getAssessmentQuestions(phaseId) {
+    const quizId="phase-"+phaseId+"-assessment-v1";
+    const questions=parseQuestions(await listPublicPracticeQuestions(quizId,"v1"));
+    return questions.length ? {ok:true,questions:questions.map(q=>({questionId:q.questionId,questionText:q.questionText,options:q.options})),passPercent:80} : {ok:false,error:"Assessment not found"};
+  }
+
+  async function getPracticeQuestions(quizId) {
+    const rows=await listPublicPracticeQuestions(quizId,"v1");
+    const questions=parseQuestions(rows);
+    return questions.length ? {ok:true,quizId,phaseId:"00",topic:"Python runtime & package management",title:"Practice Lab · Reproducible Python environments",questions:questions.map(q=>({questionId:q.questionId,questionText:q.questionText,options:q.options}))} : {ok:false,error:"Practice set not found"};
   }
 
   async function submitQuiz(payload) {
@@ -132,6 +141,7 @@
     getLearningState,
     getProtectedLesson,
     getAssessmentQuestions,
+    getPracticeQuestions,
     submitQuiz,
     saveLessonEvidence,
     completeLesson,
