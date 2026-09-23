@@ -38,10 +38,13 @@ assert.ok(app.includes("submitQuiz"), "Assessment renderer is not wired to serve
 assert.ok(!/q\.(answer)|Number\(el\.value\)===q\.answer|assessments\[id\]/.test(app), "Browser still owns assessment scoring");
 assert.ok(!app.includes("saveProgress("), "Browser still owns lesson completion");
 assert.ok(app.includes("__PUNEETH_APP_READY__"), "App readiness signal missing");
+assert.ok(app.includes("Puneeth AI Tutor"), "Website-wide AI Tutor UI missing");
+assert.ok(app.includes("sendTutorMessage"), "AI Tutor client call missing");
 
 const appwrite = read("appwrite.js");
 assert.ok(!/TablesDB/.test(appwrite), "Client still exposes direct Appwrite table access");
 assert.ok(!/x-supabase-url|x-supabase-publishable-key/.test(appwrite), "Client is still supplying trusted Supabase server configuration");
+assert.ok(appwrite.includes("sendTutorMessage"), "AI Tutor client service missing");
 
 const protectedFn = read("functions/get-protected-lesson/src/main.js");
 assert.ok(protectedFn.includes("SUPABASE_URL"));
@@ -50,10 +53,11 @@ assert.ok(protectedFn.includes("phase_unlocks"));
 assert.ok(!/x-supabase-url|x-supabase-publishable-key/.test(protectedFn), "Protected lesson function trusts client Supabase configuration");
 
 const gateFn = read("functions/submit-assessment/src/main.js");
-for (const marker of ["SUPABASE_URL","SUPABASE_PUBLISHABLE_KEY","PASS_PERCENT","practice_questions","practice_answer_keys","phase_unlocks","learner_progress","lesson_evidence","quiz_attempts"]) {
+for (const marker of ["SUPABASE_URL","SUPABASE_PUBLISHABLE_KEY","PASS_PERCENT","practice_questions","practice_answer_keys","phase_unlocks","learner_progress","lesson_evidence","quiz_attempts","OPENAI_API_KEY","tutor.chat","/v1/responses"]) {
   assert.ok(gateFn.includes(marker), "Learner gate missing " + marker);
 }
 assert.ok(/stableId/.test(gateFn), "Learner gate IDs are not deterministic");
+assert.ok(!gateFn.includes("x-supabase-url") && !gateFn.includes("x-supabase-publishable-key"), "Tutor/gate trusts client Supabase configuration");
 assert.ok(/response\(res,.*result/.test(gateFn), "Learner gate response path missing");
 
 const build = read("vercel-build.js");
