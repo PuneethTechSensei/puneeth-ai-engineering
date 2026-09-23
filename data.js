@@ -1,6 +1,6 @@
 /* Public curriculum index. Authoritative lesson content and assessment keys are server-side. */
 const phases = [["00","Setup & Engineering Workflow","Set up a reproducible AI engineering environment and the habits that make work inspectable.",["Python runtime & package management","Git fundamentals & branching","Command-line & filesystem skills","Project structure & reproducibility","HTTP & API fundamentals","Secrets & configuration","Documentation & reproducibility"]],["01","Python for AI","Learn the Python needed to build, test and maintain AI software.",["Python syntax & control flow","Functions & modules","Collections & comprehensions","Exceptions & debugging","Files, JSON & CSV","Typing & dataclasses","Testing with pytest","Python project patterns"]],["02","Data & Math Foundations","Learn the minimum data and mathematical foundations needed to reason about models and AI systems.",["NumPy arrays & vectorization","Pandas & data preparation","SQL for AI data work","Vectors, matrices & dot products","Probability & statistics","Gradients & optimization","Distance, similarity & embeddings intuition","Data quality & measurement"]],["03","Machine Learning Foundations","Build reliable classical ML workflows before moving into deep learning.",["Datasets, features & targets","Splits, leakage & baselines","Regression","Classification","Trees & ensembles","Feature engineering & regularization","Model evaluation & error analysis","Build a small ML system"]],["04","Deep Learning with PyTorch","Understand neural networks and learn to train and debug them with PyTorch.",["Tensors, datasets & autograd","Forward pass & loss","Backpropagation","Optimizers & activation functions","DataLoaders & batching","Training loops & validation","Debugging training experiments","Build a neural network"]],["05","Computer Vision","Optional specialization: build practical intuition for image models and visual evaluation.",["Image representation & preprocessing","Convolution & CNNs","Augmentation & transfer learning","Image classification & detection","Vision evaluation & mini-project"]],["06","NLP & Representation","Learn the language-processing foundations that make modern language models easier to reason about.",["Text normalization & tokenization","Bag-of-words & TF-IDF","Embeddings & representation","Pretrained NLP workflows","Text classification","NLP evaluation","Build a small text system"]],["07","Transformers","Understand the architecture behind modern language models and use pretrained Transformers correctly.",["Self-attention","Queries, keys, values & scaled attention","Multi-head attention & positional information","Transformer blocks","Encoder vs decoder architectures","Causal & attention masking","Inference mechanics","Use and fine-tune a pretrained Transformer"]],["08","LLM Foundations & Inference","Understand how modern LLM applications depend on generation, context, model choice and failure behavior.",["Autoregressive generation","Decoding: temperature, top-k & top-p","Instruction tuning & alignment overview","Context windows & context limits","Model selection, latency & cost","LLM capabilities & limitations","Generation failure modes","Build a small LLM application"]],["09","LLM Internals & Training","Optional specialization: go deeper into how language models are trained and optimized.",["Tokenization, data & pretraining objectives","Tiny Transformer implementation","Training loop & checkpoints","Memory, compute & scaling trade-offs","Build a tiny language model"]],["10","LLM Application Engineering","Turn foundation models into dependable application components.",["Prompt & instruction architecture","Context engineering","Structured outputs & validation","Model/tool API integration","Caching & cost-aware design","LLM application testing","Failure handling & fallbacks","Build an LLM application"]],["11","RAG Engineering","Build retrieval-augmented systems that ground answers in evidence and can be evaluated.",["RAG architecture & data flow","Document ingestion & normalization","Chunking strategies","Embeddings & vector search","Hybrid retrieval, metadata & reranking","Citations, grounding & answerability","RAG evaluation","Build a production-style RAG system"]],["12","Multimodal AI","Optional specialization: extend AI systems across vision, documents and audio.",["Vision-language models","Document understanding & OCR","Multimodal embeddings","Audio & cross-modal retrieval","Build and evaluate a multimodal application"]],["13","Tools & Protocols","Give models reliable, bounded interfaces to software and external systems.",["Tool contracts & schemas","Tool selection & routing","MCP concepts & control model","MCP server basics","Authentication & authorization boundaries","Tool security & trust boundaries","Tool error handling","Build a safe tool-enabled application"]],["14","Agent Engineering","Design agents as bounded, observable systems rather than unconstrained model loops.",["Harness engineering","Loop engineering & termination","Context engineering for agents","Tool design & recovery","Memory architecture","Orchestration patterns","Guardrails & permissions","Agent evaluation","Human-in-the-loop design","Observability & tracing"]],["15","AI Systems & Reliability","Turn agentic demos into durable workflows that survive retries, concurrency and partial failure.",["State machines & explicit workflow state","Workflow orchestration","Queues & background jobs","Retries, backoff & idempotency","Long-running tasks & checkpoints","Caching & concurrency","Failure recovery & compensation","Design a reliable AI workflow"]],["16","AI Quality Engineering","Treat evaluation as engineering: datasets, regression, behavior, safety and release gates.",["AI test strategy","Evaluation datasets & golden cases","Outcome vs trajectory evaluation","LLM-as-judge: use and limitations","RAG & grounding evaluation","Agent/tool-call testing","Regression & change detection","Evaluation validity, reward hacking & contamination","Safety, hallucination & adversarial testing","Build an AI evaluation harness"]],["17","Production & LLMOps","Deploy, operate and improve AI systems with observability, reliability and cost discipline.",["Serving architecture & APIs","Containers & dependency control","CI/CD for AI applications","Observability & tracing","Latency & performance","Caching & cost controls","Configuration, secrets & rollout","Incident response, rollback & recovery"]],["18","Security & Responsible AI","Design AI systems around explicit trust boundaries, least privilege, privacy and risk controls.",["Threat modeling for AI systems","Prompt injection & indirect injection","Sensitive information & privacy","Improper output handling","Supply chain & dependency risk","Permissions, excessive agency & tool security","Abuse cases, incident response & human oversight"]],["19","Capstone & Portfolio","Combine the core skills into one defensible, runnable engineering project.",["Choose the problem & define success","Architecture & threat model","Build the smallest end-to-end system","Evaluation, regression & failure analysis","Production readiness & runbook","Portfolio documentation & technical defense"]]];
-const lessonSpecs = [
+const lessonSpecs = const lessonSpecs = [
   {
     "id": "00-1",
     "phase": "00",
@@ -713,80 +713,70 @@ const lessonSpecs = [
     "phase": "14",
     "phaseName": "Agent Engineering",
     "title": "Harness engineering",
-    "summary": "As agents write more code, the engineer’s leverage shifts toward repository knowledge, tests, observability and feedback loops. This lesson gives you a concrete way to see the problem, change one variable, and verify the result.",
-    "originalVisual": "assets/agent-systems-original/agent-01.svg"
+    "summary": "As agents write more code, the engineer’s leverage shifts toward repository knowledge, tests, observability and feedback loops. This lesson gives you a concrete way to see the problem, change one variable, and verify the result."
   },
   {
     "id": "14-2",
     "phase": "14",
     "phaseName": "Agent Engineering",
     "title": "Loop engineering & termination",
-    "summary": "An agent loop is a control system; without explicit progress and termination rules it can repeat work, spend budget or take unnecessary actions. This lesson gives you a concrete way to see the problem, change one variable, and verify the result.",
-    "originalVisual": "assets/agent-systems-original/agent-02.svg"
+    "summary": "An agent loop is a control system; without explicit progress and termination rules it can repeat work, spend budget or take unnecessary actions. This lesson gives you a concrete way to see the problem, change one variable, and verify the result."
   },
   {
     "id": "14-3",
     "phase": "14",
     "phaseName": "Agent Engineering",
     "title": "Context engineering for agents",
-    "summary": "Agent context includes instructions, tools, history, state and retrieved information; poor curation can cause wrong actions even when each component works. This lesson gives you a concrete way to see the problem, change one variable, and verify the result.",
-    "originalVisual": "assets/agent-systems-original/agent-03.svg"
+    "summary": "Agent context includes instructions, tools, history, state and retrieved information; poor curation can cause wrong actions even when each component works. This lesson gives you a concrete way to see the problem, change one variable, and verify the result."
   },
   {
     "id": "14-4",
     "phase": "14",
     "phaseName": "Agent Engineering",
     "title": "Tool design & recovery",
-    "summary": "Agent reliability depends heavily on whether tools expose clear contracts and recoverable errors. This lesson gives you a concrete way to see the problem, change one variable, and verify the result.",
-    "originalVisual": "assets/agent-systems-original/agent-04.svg"
+    "summary": "Agent reliability depends heavily on whether tools expose clear contracts and recoverable errors. This lesson gives you a concrete way to see the problem, change one variable, and verify the result."
   },
   {
     "id": "14-5",
     "phase": "14",
     "phaseName": "Agent Engineering",
     "title": "Memory architecture",
-    "summary": "Memory is not one database; short-lived state, durable facts and retrieval history have different lifetimes and privacy risks. This lesson gives you a concrete way to see the problem, change one variable, and verify the result.",
-    "originalVisual": "assets/agent-systems-original/agent-05.svg"
+    "summary": "Memory is not one database; short-lived state, durable facts and retrieval history have different lifetimes and privacy risks. This lesson gives you a concrete way to see the problem, change one variable, and verify the result."
   },
   {
     "id": "14-6",
     "phase": "14",
     "phaseName": "Agent Engineering",
     "title": "Orchestration patterns",
-    "summary": "Multiple agents or steps add coordination cost; parallelism only helps when dependencies permit it. This lesson gives you a concrete way to see the problem, change one variable, and verify the result.",
-    "originalVisual": "assets/agent-systems-original/agent-06.svg"
+    "summary": "Multiple agents or steps add coordination cost; parallelism only helps when dependencies permit it. This lesson gives you a concrete way to see the problem, change one variable, and verify the result."
   },
   {
     "id": "14-7",
     "phase": "14",
     "phaseName": "Agent Engineering",
     "title": "Guardrails & permissions",
-    "summary": "The safest agent is not the one with the most warnings; it is the one whose high-impact actions are bounded by enforceable controls. This lesson gives you a concrete way to see the problem, change one variable, and verify the result.",
-    "originalVisual": "assets/agent-systems-original/agent-07.svg"
+    "summary": "The safest agent is not the one with the most warnings; it is the one whose high-impact actions are bounded by enforceable controls. This lesson gives you a concrete way to see the problem, change one variable, and verify the result."
   },
   {
     "id": "14-8",
     "phase": "14",
     "phaseName": "Agent Engineering",
     "title": "Agent evaluation",
-    "summary": "Agents can fail in their final answer, intermediate reasoning, tool use or state transitions; one final score can hide the cause. This lesson gives you a concrete way to see the problem, change one variable, and verify the result.",
-    "originalVisual": "assets/agent-systems-original/agent-08.svg"
+    "summary": "Agents can fail in their final answer, intermediate reasoning, tool use or state transitions; one final score can hide the cause. This lesson gives you a concrete way to see the problem, change one variable, and verify the result."
   },
   {
     "id": "14-9",
     "phase": "14",
     "phaseName": "Agent Engineering",
     "title": "Human-in-the-loop design",
-    "summary": "Human review is most useful when it is placed at the right risk boundary with enough context to make a decision. This lesson gives you a concrete way to see the problem, change one variable, and verify the result.",
-    "originalVisual": "assets/agent-systems-original/agent-09.svg"
+    "summary": "Human review is most useful when it is placed at the right risk boundary with enough context to make a decision. This lesson gives you a concrete way to see the problem, change one variable, and verify the result."
   },
   {
     "id": "14-10",
     "phase": "14",
     "phaseName": "Agent Engineering",
     "title": "Observability & tracing",
-    "summary": "Without traces, an agent incident becomes a guess about which model call, tool, retry or state transition caused the result. This lesson gives you a concrete way to see the problem, change one variable, and verify the result.",
-    "originalVisual": "assets/agent-systems-original/agent-10.svg"
+    "summary": "Without traces, an agent incident becomes a guess about which model call, tool, retry or state transition caused the result. This lesson gives you a concrete way to see the problem, change one variable, and verify the result."
   },
   {
     "id": "15-1",
@@ -1062,7 +1052,9 @@ const lessonSpecs = [
     "summary": "A portfolio should show engineering judgment, not just a screenshot of an AI answer. This lesson gives you a concrete way to see the problem, change one variable, and verify the result."
   }
 ];
+
 const optionalPhases = new Set(["05","09","12"]);
+
 function lessonData(id){ return lessonSpecs.filter(x=>x.id===id); }
 function phaseLessons(phaseId){ return lessonSpecs.filter(x=>x.phase===phaseId); }
 const glossary = [
