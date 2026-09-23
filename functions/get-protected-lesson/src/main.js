@@ -28,11 +28,10 @@ function allowRate(key, limit) {
 }
 
 async function validateSupabaseSession(req) {
-  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) return { error: "Authentication service is not configured.", status: 503 };
-
   const auth = req.headers?.authorization || req.headers?.Authorization || "";
   const match = /^Bearer\s+(.+)$/i.exec(auth);
   if (!match) return { error: "Authentication required.", status: 401 };
+  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) return { error: "Authentication service is not configured.", status: 503 };
 
   try {
     const result = await fetch(SUPABASE_URL + "/auth/v1/user", {
