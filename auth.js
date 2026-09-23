@@ -1,10 +1,10 @@
 (function () {
   const cfg = window.PUNEETH_SUPABASE || {};
   const configured = Boolean(
-    cfg.url &&
-    !cfg.url.includes('YOUR-PROJECT') &&
-    cfg.publishableKey &&
-    !cfg.publishableKey.includes('YOUR_SUPABASE')
+    typeof cfg.url === 'string' &&
+    /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(cfg.url.trim()) &&
+    typeof cfg.publishableKey === 'string' &&
+    cfg.publishableKey.startsWith('sb_publishable_')
   );
 
   let supabase = null;
