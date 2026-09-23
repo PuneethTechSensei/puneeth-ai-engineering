@@ -1,4 +1,4 @@
-export const CURRICULUM = {
+const CURRICULUM = {
   "10": {
     "name": "LLM Application Engineering",
     "lessons": [
@@ -269,4 +269,6 @@ export const CURRICULUM = {
     ],
     "optional": true
   }
-};
+}
+
+module.exports = { CURRICULUM };
