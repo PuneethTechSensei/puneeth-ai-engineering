@@ -1,4 +1,5 @@
-const crypto=require('crypto');
+import crypto from "node:crypto";
+
 const DB=process.env.APPWRITE_DATABASE_ID||'ai-engineering';
 const LESSONS='protected_lessons_v1';
 const EVIDENCE='lesson_evidence';
