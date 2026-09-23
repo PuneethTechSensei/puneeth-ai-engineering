@@ -64,12 +64,22 @@
   }
 
   async function getProtectedLesson(lessonId, version = "v1") {
-    const user = await currentUser();
-    if (!user || !functions || !cfg.protectedLessonFunctionId) {
-      return { ok: false, reason: "not-authenticated" };
+    if (!functions || !cfg.protectedLessonFunctionId) {
+      return { ok: false, reason: "not-configured" };
     }
 
     try {
+      const supabaseClient = window.PuneethAuth?.client?.();
+      if (!supabaseClient) return { ok: false, reason: "not-authenticated" };
+
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session?.access_token) return { ok: false, reason: "not-authenticated" };
+
+      const supabaseCfg = window.PUNEETH_SUPABASE || {};
+      if (!supabaseCfg.url || !supabaseCfg.publishableKey) {
+        return { ok: false, reason: "supabase-not-configured" };
+      }
+
       const path = "/?lessonId=" + encodeURIComponent(lessonId) +
         "&version=" + encodeURIComponent(version);
 
@@ -78,7 +88,12 @@
         body: "",
         async: false,
         method: "GET",
-        path
+        path,
+        headers: {
+          Authorization: "Bearer " + session.access_token,
+          "x-supabase-url": supabaseCfg.url,
+          "x-supabase-publishable-key": supabaseCfg.publishableKey
+        }
       });
 
       let body = null;
