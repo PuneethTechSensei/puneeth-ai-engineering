@@ -1,23 +1,36 @@
-(function(){
+(async function(){
   const progressKey='puneeth-ai-progress-v3';
   const assessmentKey='puneeth-ai-assessments-v2';
-  const getProgress=()=>JSON.parse(localStorage.getItem(progressKey)||'{}');
-  const saveProgress=p=>{localStorage.setItem(progressKey,JSON.stringify(p));window.dispatchEvent(new CustomEvent('puneeth:progress',{detail:{progress:p}}));};
-  const getAssessments=()=>JSON.parse(localStorage.getItem(assessmentKey)||'{}');
-  const saveAssessments=p=>{localStorage.setItem(assessmentKey,JSON.stringify(p));window.dispatchEvent(new CustomEvent('puneeth:assessment',{detail:{assessments:p}}));};
+  let serverState=null;
+
+  const localProgress=()=>{try{return JSON.parse(localStorage.getItem(progressKey)||'{}')}catch{return{}}};
+  const getProgress=()=>serverState?.authenticated ? (serverState.lessonProgress||{}) : {};
+  const getAssessments=()=>serverState?.authenticated ? (serverState.passedAssessments||{}) : {};
+  const authenticated=()=>serverState?.authenticated===true;
+  const refreshServerState=async()=>{
+    if(!window.PuneethAppwrite?.configured?.()) return;
+    try{
+      const next=await window.PuneethAppwrite.getLearningState();
+      if(next?.ok) serverState=next;
+    }catch(error){console.warn('Could not load server learning state:',error)}
+  };
+
+  await (window.PuneethAuth?.ready?.()||Promise.resolve());
+  await refreshServerState();
+
   const optionalPhases=new Set(['05','09','12']);
   const isOptionalPhase=id=>optionalPhases.has(String(id));
   const completedLessons=phase=>phase[3].filter((_,i)=>getProgress()[`${phase[0]}-${i+1}`]).length;
   const assessmentPassed=id=>getAssessments()[id]===true;
   const phaseComplete=id=>{const p=phases.find(x=>x[0]===id);return !!p&&completedLessons(p)===p[3].length&&assessmentPassed(id)};
-  const previousPhase=id=>{const i=phases.findIndex(p=>p[0]===id);for(let j=i-1;j>=0;j--)if(!isOptionalPhase(phases[j][0]))return phases[j];return null};
-  const phaseUnlocked=id=>{const prev=previousPhase(id);return !prev||phaseComplete(prev[0]);};
-  const overallStats=()=>{const total=phases.reduce((n,p)=>n+p[3].length,0);const done=Object.values(getProgress()).filter(Boolean).length;const unlocked=phases.filter(p=>phaseUnlocked(p[0])).length;return{total,done,unlocked,percent:Math.round(done/total*100)}};
+  const phaseUnlocked=id=>serverState?.authenticated === true && (String(id)==='00'||serverState.unlockedPhases?.includes?.(String(id))||false);
+  const overallStats=()=>{const total=phases.reduce((n,p)=>n+p[3].length,0);const done=Object.values(getProgress()).filter(Boolean).length;const unlocked=phases.filter(p=>phaseUnlocked(p[0])).length;return{total,done,unlocked,percent:total?Math.round(done/total*100):0}};
   const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
   const labKey=id=>`puneeth_lab_${id}`;
   const readLab=id=>{try{return JSON.parse(localStorage.getItem(labKey(id))||'null')}catch{return null}};
   const saveLab=(id,x)=>localStorage.setItem(labKey(id),JSON.stringify(x));
   const listLabs=()=>Object.keys(localStorage).filter(k=>k.startsWith('puneeth_lab_')).map(k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch{return null}}).filter(Boolean);
+
   const phaseTransfer=id=>({
     '00':'These habits make every later experiment reproducible and debuggable.','01':'These Python contracts become the building blocks for data pipelines, model code and evaluation harnesses.','02':'These data and mathematical tools let you inspect representations, metrics and model behavior instead of treating them as magic.','03':'These ML evaluation habits become the baseline for deep learning and AI-system regression work.','04':'These training and debugging skills prepare you to reason about modern model behavior and inference.','05':'These vision skills transfer to multimodal inputs and image/document evaluation.','06':'These representation and evaluation skills make tokenization, embeddings and Transformers easier to reason about.','07':'These architectural concepts explain how modern LLM inference transforms context into tokens.','08':'These inference concepts become practical controls for dependable LLM applications.','09':'This optional track gives you mechanistic intuition for the training systems behind foundation models.','10':'These application-engineering controls are reused in RAG, tools, agents and production services.','11':'These retrieval and grounding controls become core infrastructure for knowledge-heavy AI systems.','12':'These multimodal concepts extend the same engineering loop across visual, document and audio inputs.','13':'These contracts and boundaries are the foundation for safe tool use and agent autonomy.','14':'These agent design skills connect models, tools, context, state, evaluation and human control into one system.','15':'These reliability patterns keep AI workflows correct when retries, concurrency and partial failure occur.','16':'These evaluation practices become the quality gate for every model, prompt, retrieval or agent change.','17':'These production practices turn an AI prototype into an observable, recoverable service.','18':'These controls constrain the real-world blast radius of model and application failures.','19':'This capstone turns the curriculum into evidence you can explain, reproduce and defend.'}[String(id)]||'Use this skill in the next system you build.' );
 
@@ -42,28 +55,127 @@
 
   const grid=document.getElementById('phaseGrid');
   const list=document.getElementById('curriculumList');
-  if(list){const search=document.getElementById('search'),status=document.getElementById('status');const render=()=>{const q=(search?.value||'').toLowerCase(),st=status?.value||'all',prog=getProgress();list.innerHTML=phases.map(p=>{const d=completedLessons(p),u=phaseUnlocked(p[0]),c=phaseComplete(p[0]);const matches=p[3].map((title,i)=>({id:`${p[0]}-${i+1}`,title})).filter(x=>(`${p[1]} ${p[2]} ${x.title}`).toLowerCase().includes(q)).filter(x=>st==='all'||(st==='done'?prog[x.id]:!prog[x.id]));if(!matches.length)return '';return `<section class="phase-block ${!u?'is-locked':''}" id="phase-${p[0]}"><div class="phase-title"><div><div class="eyebrow">PHASE ${p[0]} ${c?'· COMPLETE':!u?'· LOCKED':isOptionalPhase(p[0])?'· OPTIONAL SPECIALIZATION':''}</div><h2>${esc(p[1])}${isOptionalPhase(p[0])?'<span class="optional-badge">Optional specialization</span>':''}</h2></div><div class="phase-summary"><small>${esc(p[2])}</small><strong>${d}/${p[3].length} lessons</strong></div></div>${!u?`<div class="lock-banner"><span>🔒</span><div><b>Complete the previous core phase first.</b><p>This phase remains visible as a preview. Unlocking requires the prerequisite core phase assessment.</p></div><a class="btn" href="lesson.html?id=${p[0]}-1&preview=1">Preview phase →</a></div>`:''}<div class="lessons">${matches.map((x,j)=>`<div class="lesson-row ${prog[x.id]?'done':''} ${!u?'disabled':''}"><span class="idx">${String(j+1).padStart(2,'0')}</span><a class="title" href="lesson.html?id=${x.id}${!u?'&preview=1':''}">${esc(x.title)}</a><label class="tag"><input class="check" type="checkbox" data-id="${x.id}" ${prog[x.id]?'checked':''} ${!u?'disabled':''}> ${prog[x.id]?'done':'complete'}</label></div>`).join('')}</div><div class="phase-footer"><span>${c?'✓ Assessment passed':isOptionalPhase(p[0])?'Optional assessment · does not block core progression':'Assessment required to unlock the next core phase'}</span><a href="assessment.html?phase=${p[0]}">${c?'Review assessment':'Take assessment →'}</a></div></section>`}).join('')||'<div class="no-results">No lessons match that search.</div>';document.querySelectorAll('.check').forEach(el=>el.onchange=()=>{const p=getProgress();if(el.checked)p[el.dataset.id]=1;else delete p[el.dataset.id];saveProgress(p);render()})};search?.addEventListener('input',render);status?.addEventListener('change',render);render();}
+  if(list){const search=document.getElementById('search'),status=document.getElementById('status');const render=()=>{const q=(search?.value||'').toLowerCase(),st=status?.value||'all',prog=getProgress();list.innerHTML=phases.map(p=>{const d=completedLessons(p),u=phaseUnlocked(p[0]),c=phaseComplete(p[0]);const matches=p[3].map((title,i)=>({id:`${p[0]}-${i+1}`,title})).filter(x=>(`${p[1]} ${p[2]} ${x.title}`).toLowerCase().includes(q)).filter(x=>st==='all'||(st==='done'?prog[x.id]:!prog[x.id]));if(!matches.length)return '';return `<section class="phase-block ${!u?'is-locked':''}" id="phase-${p[0]}"><div class="phase-title"><div><div class="eyebrow">PHASE ${p[0]} ${c?'· COMPLETE':!u?'· LOCKED':isOptionalPhase(p[0])?'· OPTIONAL SPECIALIZATION':''}</div><h2>${esc(p[1])}${isOptionalPhase(p[0])?'<span class="optional-badge">Optional specialization</span>':''}</h2></div><div class="phase-summary"><small>${esc(p[2])}</small><strong>${d}/${p[3].length} lessons</strong></div></div>${!u?`<div class="lock-banner"><span>🔒</span><div><b>Complete the previous core phase first.</b><p>This phase remains visible as a preview. Unlocking requires the prerequisite core phase assessment.</p></div><a class="btn" href="lesson.html?id=${p[0]}-1&preview=1">Preview phase →</a></div>`:''}<div class="lessons">${matches.map((x,j)=>`<div class="lesson-row ${prog[x.id]?'done':''} ${!u?'disabled':''}"><span class="idx">${String(j+1).padStart(2,'0')}</span><a class="title" href="lesson.html?id=${x.id}${!u?'&preview=1':''}">${esc(x.title)}</a><label class="tag"><input class="check" type="checkbox" data-id="${x.id}" ${prog[x.id]?'checked':''} disabled> ${prog[x.id]?'done':'complete'}</label></div>`).join('')}</div><div class="phase-footer"><span>${c?'✓ Assessment passed':isOptionalPhase(p[0])?'Optional assessment · does not block core progression':'Assessment required to unlock the next core phase'}</span><a href="assessment.html?phase=${p[0]}">${c?'Review assessment':'Take assessment →'}</a></div></section>`}).join('')||'<div class="no-results">No lessons match that search.</div>'};search?.addEventListener('input',render);status?.addEventListener('change',render);render();}
 
   const gloss=document.getElementById('glossary');if(gloss){const input=document.getElementById('glossarySearch');const render=()=>{const q=(input?.value||'').toLowerCase();gloss.innerHTML=glossary.filter(x=>x.join(' ').toLowerCase().includes(q)).map(x=>`<article class="term"><b>${esc(x[0])}</b><p>${esc(x[1])}</p></article>`).join('')||'<div class="no-results">No terms found.</div>'};input?.addEventListener('input',render);render();}
 
   const lesson=document.getElementById('lessonContent');
   if(lesson){
-    const params=new URLSearchParams(location.search),id=params.get('id')||'00-1',preview=params.get('preview')==='1',phase=phases.find(p=>p[0]===id.split('-')[0])||phases[0],unlocked=phaseUnlocked(phase[0]),data=lessonData(id)[0]||lessonData(`${phase[0]}-1`)[0],prog=getProgress();
-    document.title=`${data.title} · AI Engineering by TechSensei`;
-    if(!unlocked&&!preview){lesson.innerHTML=`<div class="locked-page"><div class="lock-icon">🔒</div><div class="eyebrow">PHASE ${phase[0]} · LOCKED</div><h1>${esc(phase[1])}</h1><p class="lead">Finish the previous core phase and pass its assessment to unlock this lesson.</p><a class="btn primary" href="curriculum.html">Return to curriculum →</a></div>`}
-    else{
-      const saved=readLab(data.id),resources=(data.resources||[]).map(r=>{const label=Array.isArray(r)?r[0]:r?.label;const url=Array.isArray(r)?r[1]:r?.url;if(!label||!url)return '';return \`<li><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a></li>\`;}).join('');const moduleBanners={'04':'assets/module-banners/module-04-deep-learning.svg','07':'assets/module-banners/module-07-transformers.svg','11':'assets/module-banners/module-11-rag.svg'};const moduleBanner=moduleBanners[data.phase]||'';
-      lesson.innerHTML=`<div class="eyebrow">PHASE ${data.phase} · ${esc(data.phaseName).toUpperCase()} ${preview?'· PREVIEW':''}</div><h1>${esc(data.title)}</h1><div class="meta">LESSON ${data.id} · LEARN / EXPERIMENT / BUILD / BREAK / PROVE</div>${preview&&!unlocked?'<div class="callout warning">Preview mode: learn what is ahead, but progress remains locked until the prerequisite phase is complete.</div>':''}<p class="lead">${esc(data.summary)}</p>${moduleBanner?\`<section class="module-banner" aria-label="Module visual"><img src="${moduleBanner}" alt="Module ${esc(data.phase)} visual for ${esc(data.phaseName)}" loading="eager"></section>\`:''}<div class="skill-card lesson-skill-v9"><div><div class="skill-label">SKILL TARGET</div><h3>${esc(data.skillTarget||data.title)}</h3><p>By the end, you should be able to demonstrate this capability on a small real problem.</p></div><div><div class="skill-label">USED LATER</div><h3>Why this matters later</h3><p>${esc(data.usedLater||data.transfer||phaseTransfer(data.phase))}</p></div></div><div class="lesson-quality-strip"><span><b>Level</b>${esc(data.competency.difficulty)}</span><span><b>Time</b>${esc(data.competency.time)}</span><span><b>Proof</b>${esc(data.competency.artifact)}</span>${data.competency.reviewed?`<span><b>Reviewed</b>${esc(data.competency.reviewed)}</span>`:''}${data.competency.freshness?`<span class="freshness"><b>Freshness</b>${esc(data.competency.freshness)}</span>`:''}</div><section class="lesson-section why"><div class="section-kicker">01 · WHY THIS EXISTS</div><h2>Start with the engineering problem</h2><p>${esc(data.why)}</p></section><section class="lesson-section concept"><div class="section-kicker">02 · LEARN</div><h2>Build the mental model</h2><p>${esc(data.body)}</p><div class="worked-example"><b>Worked example</b><p>${esc(data.example)}</p><div class="decision-box"><b>Decision checkpoint</b><p>${esc(data.decision||'What engineering choice does this lesson require?')}</p></div></div></section><section class="lesson-section build"><div class="section-kicker">03 · BUILD / EXPERIMENT</div><h2>Do something observable</h2><p>${esc(data.practice)}</p>${(data.guidedSteps||[]).length?`<ol class="guided-steps">${data.guidedSteps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}<pre><code>${esc(data.code)}</code></pre></section><section class="lesson-section break"><div class="section-kicker">04 · BREAK</div><h2>Challenge one assumption</h2><p>${esc(data.breakIt)}</p></section>${renderLab(data)}<section class="lesson-section proof"><div class="section-kicker">05 · PROVE</div><h2>What counts as evidence?</h2><p>${esc(data.proof)}</p><ul>${data.takeaways.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section><section class="lesson-section transfer"><div class="section-kicker">06 · TRANSFER</div><h2>Where this skill reappears</h2><p>${esc(data.transfer)}</p></section><section class="lesson-section mistakes"><div class="section-kicker">COMMON MISTAKES</div><ul>${data.mistakes.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section>${resources?`<section class="lesson-section resources"><div class="section-kicker">FURTHER READING</div><ul>${resources}</ul></section>`:''}${unlocked?`<div class="completion-block"><div class="completion-copy"><div class="experience-kicker">PROGRESS GATE</div><b>${saved?'Evidence recorded.':'Finish the lab and save evidence before completion.'}</b><span>Completion is self-reported. The platform asks for evidence; it does not claim to independently verify your work.</span></div><button id="complete" class="complete ${prog[data.id]?'done':''}" ${saved?'':'disabled'}>${prog[data.id]?'✓ Completed':'Mark lesson complete'}</button></div>`:'<div class="callout">🔒 Complete the prerequisite core phase to unlock progress tracking.</div>'}`;
-      if(unlocked){
-        document.getElementById('saveLab')?.addEventListener('click',()=>{const fields={};document.querySelectorAll('[data-proof-field]').forEach(el=>fields[el.dataset.proofField]=el.value.trim());const checks={};document.querySelectorAll('[data-success-check]').forEach(el=>checks[el.value]=el.checked);const artifact=document.querySelector('[data-artifact]')?.value.trim()||'';const status=document.getElementById('labStatus');if(Object.values(fields).some(v=>v.length<25)){status.textContent='Add concrete evidence to all four fields; each should describe what you actually observed or decided.';status.className='lab-status error';return}if(Object.values(checks).some(v=>!v)){status.textContent='Complete every success criterion after performing it.';status.className='lab-status error';return}saveLab(data.id,{id:data.id,title:data.title,type:data.experience?.type||'Build',fields,checks,artifact,savedAt:new Date().toISOString()});status.textContent='✓ Evidence saved locally.';status.className='lab-status success';const btn=document.getElementById('complete');if(btn){btn.disabled=false;btn.textContent=prog[data.id]?'✓ Completed':'Mark lesson complete'}});
-        document.getElementById('complete')?.addEventListener('click',()=>{if(!readLab(data.id)){return}const p=getProgress();const done=!p[data.id];if(done)p[data.id]=1;else delete p[data.id];saveProgress(p);window.PuneethAuth?.logEvent?.(done?'lesson_completed':'lesson_uncompleted',{lesson:data.id,phase:data.phase,labEvidence:true});location.reload()});
+    const params=new URLSearchParams(location.search);
+    const id=params.get('id')||'00-1';
+    const preview=params.get('preview')==='1';
+    const publicData=lessonData(id)[0]||lessonData('00-1')[0];
+
+    if(!publicData){
+      lesson.innerHTML='<div class="locked-page"><h1>Lesson not found</h1><p class="lead">The requested lesson could not be resolved.</p></div>';
+    }else{
+      const phase=phases.find(p=>p[0]===publicData.phase)||phases[0];
+      const unlocked=phaseUnlocked(phase[0]);
+      document.title=`${publicData.title} · AI Engineering by TechSensei`;
+
+      const renderLesson=(data)=>{
+        const prog=getProgress();
+        const saved=readLab(data.id);
+        const competency=data.competency||{};
+        const experience=data.experience||{};
+        const resources=(data.resources||[]).map(r=>{const label=Array.isArray(r)?r[0]:r?.label;const url=Array.isArray(r)?r[1]:r?.url;if(!label||!url)return '';return `<li><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a></li>`;}).join('');
+        const moduleBanners={'04':'assets/module-banners/module-04-deep-learning.svg','07':'assets/module-banners/module-07-transformers.svg','11':'assets/module-banners/module-11-rag.svg'};
+        const moduleBanner=moduleBanners[data.phase]||'';
+        lesson.innerHTML=`<div class="eyebrow">PHASE ${esc(data.phase)} · ${esc(data.phaseName).toUpperCase()} ${preview?'· PREVIEW':''}</div><h1>${esc(data.title)}</h1><div class="meta">LESSON ${esc(data.id)} · LEARN / EXPERIMENT / BUILD / BREAK / PROVE</div>${preview&&!unlocked?'<div class="callout warning">Preview mode: learn what is ahead, but progress remains locked until the prerequisite phase is complete.</div>':''}<p class="lead">${esc(data.summary)}</p>${moduleBanner?`<section class="module-banner" aria-label="Module visual"><img src="${moduleBanner}" alt="Module ${esc(data.phase)} visual for ${esc(data.phaseName)}" loading="eager"></section>`:''}<div class="skill-card lesson-skill-v9"><div><div class="skill-label">SKILL TARGET</div><h3>${esc(data.skillTarget||data.title)}</h3><p>By the end, you should be able to demonstrate this capability on a small real problem.</p></div><div><div class="skill-label">USED LATER</div><h3>Why this matters later</h3><p>${esc(data.usedLater||data.transfer||phaseTransfer(data.phase))}</p></div></div><div class="lesson-quality-strip"><span><b>Level</b>${esc(competency.difficulty||'Core')}</span><span><b>Time</b>${esc(competency.time||'30–45 min')}</span><span><b>Proof</b>${esc(competency.artifact||data.proof||'Observable evidence')}</span>${competency.reviewed?`<span><b>Reviewed</b>${esc(competency.reviewed)}</span>`:''}${competency.freshness?`<span class="freshness"><b>Freshness</b>${esc(competency.freshness)}</span>`:''}</div><section class="lesson-section why"><div class="section-kicker">01 · WHY THIS EXISTS</div><h2>Start with the engineering problem</h2><p>${esc(data.why)}</p></section><section class="lesson-section concept"><div class="section-kicker">02 · LEARN</div><h2>Build the mental model</h2><p>${esc(data.body)}</p><div class="worked-example"><b>Worked example</b><p>${esc(data.example)}</p><div class="decision-box"><b>Decision checkpoint</b><p>${esc(data.decision||'What engineering choice does this lesson require?')}</p></div></div></section><section class="lesson-section build"><div class="section-kicker">03 · BUILD / EXPERIMENT</div><h2>Do something observable</h2><p>${esc(data.practice)}</p>${(data.guidedSteps||[]).length?`<ol class="guided-steps">${data.guidedSteps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}<pre><code>${esc(data.code)}</code></pre></section><section class="lesson-section break"><div class="section-kicker">04 · BREAK</div><h2>Challenge one assumption</h2><p>${esc(data.breakIt)}</p></section>${renderLab(data)}<section class="lesson-section proof"><div class="section-kicker">05 · PROVE</div><h2>What counts as evidence?</h2><p>${esc(data.proof)}</p><ul>${(data.takeaways||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section><section class="lesson-section transfer"><div class="section-kicker">06 · TRANSFER</div><h2>Where this skill reappears</h2><p>${esc(data.transfer)}</p></section><section class="lesson-section mistakes"><div class="section-kicker">COMMON MISTAKES</div><ul>${(data.mistakes||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section>${resources?`<section class="lesson-section resources"><div class="section-kicker">FURTHER READING</div><ul>${resources}</ul></section>`:''}<div class="completion-block"><div class="completion-copy"><div class="experience-kicker">PROGRESS GATE</div><b>${prog[data.id]?'Evidence recorded and lesson completed.':saved?'Local evidence found — save it to the server to enable completion.':'Finish the lab and save evidence before completion.'}</b><span>Completion is stored server-side after evidence is submitted; local notes are only a convenience cache.</span></div><button id="complete" class="complete ${prog[data.id]?'done':''}" disabled>${prog[data.id]?'✓ Completed':'Mark lesson complete'}</button></div>`;
+      };
+
+      if(!unlocked&&!preview){
+        lesson.innerHTML=`<div class="locked-page"><div class="lock-icon">🔒</div><div class="eyebrow">PHASE ${phase[0]} · LOCKED</div><h1>${esc(phase[1])}</h1><p class="lead">Finish the prerequisite core phase and pass its assessment to unlock this protected lesson.</p><a class="btn primary" href="curriculum.html">Return to curriculum →</a></div>`;
+      }else if(preview||!authenticated()){
+        lesson.innerHTML=`<div class="locked-page"><div class="lock-icon">🔐</div><div class="eyebrow">PROTECTED LESSON</div><h1>${esc(publicData.title)}</h1><p class="lead">${preview?'This preview exposes curriculum metadata only.':'Sign in to access the full lesson content.'}</p><a class="btn primary" href="account.html">Sign in →</a></div>`;
+      }else{
+        lesson.innerHTML=`<div class="locked-page"><div class="lock-icon">🔐</div><div class="eyebrow">PROTECTED LESSON</div><h1>${esc(publicData.title)}</h1><p class="lead">Loading protected lesson content…</p></div>`;
+        const result=await window.PuneethAppwrite.getProtectedLesson(publicData.id,'v1');
+        if(result.ok){
+          renderLesson({...publicData,...result.content});
+          const complete=document.getElementById('complete');
+          let serverEvidenceSaved=false;
+
+          document.getElementById('saveLab')?.addEventListener('click',async()=>{
+            const fields={};document.querySelectorAll('[data-proof-field]').forEach(el=>fields[el.dataset.proofField]=el.value.trim());
+            const checks={};document.querySelectorAll('[data-success-check]').forEach(el=>checks[el.value]=el.checked);
+            const artifact=document.querySelector('[data-artifact]')?.value.trim()||'';
+            const status=document.getElementById('labStatus');
+            if(Object.values(fields).some(v=>v.length<25)){status.textContent='Add concrete evidence to all four fields; each should describe what you actually observed or decided.';status.className='lab-status error';return}
+            if(Object.values(checks).some(v=>!v)){status.textContent='Complete every success criterion after performing it.';status.className='lab-status error';return}
+            status.textContent='Saving evidence securely…';status.className='lab-status';
+            const savedResult=await window.PuneethAppwrite.saveLessonEvidence({lessonId:data.id,phaseId:data.phase,title:data.title,type:data.experience?.type||'Build',fields,checks,artifact});
+            if(!savedResult.ok){status.textContent=savedResult.error||'Could not save evidence.';status.className='lab-status error';return}
+            saveLab(data.id,{id:data.id,title:data.title,type:data.experience?.type||'Build',fields,checks,artifact,savedAt:new Date().toISOString()});
+            serverEvidenceSaved=true;
+            status.textContent='✓ Evidence saved to your learner record.';status.className='lab-status success';
+            if(complete){complete.disabled=false;complete.textContent='Mark lesson complete'}
+          });
+
+          complete?.addEventListener('click',async()=>{
+            if(!serverEvidenceSaved||getProgress()[data.id])return;
+            complete.disabled=true;complete.textContent='Saving…';
+            const doneResult=await window.PuneethAppwrite.completeLesson({lessonId:data.id,phaseId:data.phase});
+            if(!doneResult.ok){complete.disabled=false;complete.textContent='Mark lesson complete';document.getElementById('labStatus').textContent=doneResult.error||'Could not complete lesson.';document.getElementById('labStatus').className='lab-status error';return}
+            serverState=doneResult.state||serverState;
+            window.PuneethAuth?.logEvent?.('lesson_completed',{lesson:data.id,phase:data.phase,serverVerified:true});
+            location.reload();
+          });
+
+          const side=document.getElementById('lessonSide');
+          if(side)side.innerHTML=`<div class="side-title">${esc(phase[1])}</div>${phase[3].map((t,i)=>{const lid=`${phase[0]}-${i+1}`;return `<a class="side-link ${lid===data.id?'current':''}" href="lesson.html?id=${lid}">${getProgress()[lid]?'✓ ':''}${esc(t)}</a>`}).join('')}<a class="side-link" href="assessment.html?phase=${phase[0]}">Assessment →</a><a class="side-link" href="curriculum.html">← Back to curriculum</a>`;
+        }else{
+          lesson.innerHTML=`<div class="locked-page"><div class="lock-icon">🔐</div><div class="eyebrow">PROTECTED LESSON</div><h1>${esc(publicData.title)}</h1><p class="lead">${esc(result.error||'Protected content is temporarily unavailable.')}</p><a class="btn primary" href="account.html">Sign in →</a></div>`;
+        }
       }
     }
-    const side=document.getElementById('lessonSide');if(side)side.innerHTML=`<div class="side-title">${esc(phase[1])}</div>${phase[3].map((t,i)=>{const lid=`${phase[0]}-${i+1}`;return `<a class="side-link ${lid===data.id?'current':''}" href="lesson.html?id=${lid}${!unlocked?'&preview=1':''}">${prog[lid]?'✓ ':''}${esc(t)}</a>`}).join('')}<a class="side-link" href="assessment.html?phase=${phase[0]}">Assessment →</a><a class="side-link" href="curriculum.html">← Back to curriculum</a>`;
   }
 
   const assessment=document.getElementById('assessmentContent');
-  if(assessment){const id=new URLSearchParams(location.search).get('phase')||'00',phase=phases.find(p=>p[0]===id)||phases[0],unlocked=phaseUnlocked(id),questions=assessments[id]||[],done=completedLessons(phase),existing=assessmentPassed(id),passMark=Math.ceil(questions.length*.8);assessment.innerHTML=`<div class="eyebrow">PHASE ${id} ASSESSMENT</div><h1>${esc(phase[1])}</h1><p class="lead">Use the assessment to check whether you can apply the phase skills. You need ${passMark}/${questions.length} correct, plus all lesson evidence, to complete the phase.</p>${!unlocked&&id!=='00'?'<div class="callout warning">Preview mode: this assessment does not unlock the phase yet.</div>':''}<div class="assessment-meta"><b>${done}/${phase[3].length}</b><span>lessons completed</span><b>${questions.length}</b><span>questions</span><b>${passMark}/${questions.length}</b><span>needed</span></div>${questions.map((q,i)=>`<fieldset class="question"><legend>${i+1}. ${esc(q.q)}</legend>${q.options.map((o,j)=>`<label><input type="radio" name="q${i}" value="${j}"> ${esc(o)}</label>`).join('')}</fieldset>`).join('')}<button class="btn primary" id="submitAssessment">${existing?'Retake assessment':'Submit assessment'}</button><div id="assessmentResult"></div>`;document.getElementById('submitAssessment').onclick=()=>{let score=0;questions.forEach((q,i)=>{const el=document.querySelector(`input[name="q${i}"]:checked`);if(el&&Number(el.value)===q.answer)score++});const passed=score>=passMark,canComplete=passed&&done===phase[3].length&&unlocked;if(canComplete){const r=getAssessments();r[id]=true;saveAssessments(r);window.PuneethAuth?.logEvent?.('phase_completed',{phase:id,score,total:questions.length})}else window.PuneethAuth?.logEvent?.('assessment_attempt',{phase:id,score,total:questions.length,passed});const result=document.getElementById('assessmentResult');result.className=`result ${canComplete?'success':'retry'}`;result.innerHTML=`<h3>${canComplete?'✓ Phase complete':passed?'Assessment passed — finish the remaining evidence':'Keep practicing'}</h3><p>You scored ${score}/${questions.length}. ${canComplete?'The next core phase is now unlocked.':done<phase[3].length?`Complete the remaining ${phase[3].length-done} lesson(s) first.`:`You need at least ${passMark} correct answers.`}</p>`};}
+  if(assessment){
+    const id=new URLSearchParams(location.search).get('phase')||'00';
+    const phase=phases.find(p=>p[0]===id)||phases[0];
+    const unlocked=phaseUnlocked(id);
+    if(!authenticated()){
+      assessment.innerHTML=`<div class="locked-page"><div class="lock-icon">🔐</div><div class="eyebrow">PHASE ${id} ASSESSMENT</div><h1>${esc(phase[1])}</h1><p class="lead">Sign in to load the assessment and keep the result in your secure learner record.</p><a class="btn primary" href="account.html">Sign in →</a></div>`;
+    }else if(!unlocked){
+      assessment.innerHTML=`<div class="locked-page"><div class="lock-icon">🔒</div><div class="eyebrow">PHASE ${id} · LOCKED</div><h1>${esc(phase[1])}</h1><p class="lead">Complete the prerequisite phase to unlock this assessment.</p><a class="btn" href="curriculum.html">Back to curriculum →</a></div>`;
+    }else{
+      assessment.innerHTML='<div class="locked-page"><div class="eyebrow">LOADING ASSESSMENT</div><p class="lead">Loading questions from the protected assessment service…</p></div>';
+      const qResult=await window.PuneethAppwrite.getAssessmentQuestions(id);
+      if(!qResult.ok){
+        assessment.innerHTML=`<div class="locked-page"><h1>Assessment unavailable</h1><p class="lead">${esc(qResult.error||'Unable to load the assessment.')}</p></div>`;
+      }else{
+        const questions=qResult.questions||[];
+        const passPercent=Number(qResult.passPercent||80);
+        const passMark=Math.ceil(questions.length*passPercent/100);
+        const done=completedLessons(phase);
+        const existing=assessmentPassed(id);
+        assessment.innerHTML=`<div class="eyebrow">PHASE ${id} ASSESSMENT</div><h1>${esc(phase[1])}</h1><p class="lead">You need ${passMark}/${questions.length} correct (${passPercent}%) and all lesson evidence completed to unlock the next phase.</p><div class="assessment-meta"><b>${done}/${phase[3].length}</b><span>lessons completed</span><b>${questions.length}</b><span>questions</span><b>${passMark}/${questions.length}</b><span>needed</span></div>${questions.map((q,i)=>`<fieldset class="question"><legend>${i+1}. ${esc(q.questionText)}</legend>${(q.options||[]).map((o,j)=>`<label><input type="radio" name="q${i}" value="${j}"> ${esc(o)}</label>`).join('')}</fieldset>`).join('')}<button class="btn primary" id="submitAssessment">${existing?'Retake assessment':'Submit assessment'}</button><div id="assessmentResult"></div>`;
+        const started=Date.now();
+        document.getElementById('submitAssessment').onclick=async()=>{
+          const answers={};
+          questions.forEach((q,i)=>{const el=document.querySelector(`input[name="q${i}"]:checked`);answers[q.questionId]=el?Number(el.value):null});
+          const button=document.getElementById('submitAssessment');
+          button.disabled=true;button.textContent='Checking securely…';
+          const result=await window.PuneethAppwrite.submitQuiz({kind:'assessment',phaseId:id,answers,elapsedSeconds:Math.max(1,Math.round((Date.now()-started)/1000))});
+          const box=document.getElementById('assessmentResult');
+          if(!result.ok){
+            button.disabled=false;button.textContent=existing?'Retake assessment':'Submit assessment';
+            box.className='result retry';box.innerHTML=`<h3>Assessment could not be submitted</h3><p>${esc(result.error||'Try again after checking your session.')}</p>`;
+            return;
+          }
+          serverState=result.state||serverState;
+          box.className='result '+(result.canComplete?'success':'retry');
+          box.innerHTML=`<h3>${result.canComplete?'✓ Phase complete':result.passed?'Assessment passed':'Keep practicing'}</h3><p>You scored ${result.score}/${result.maxScore} (${result.percent}%). ${result.canComplete?'The next available phase is now unlocked.':result.passed?'Finish all lesson evidence to complete the phase.':'Review the protected lesson material and retry when ready.'}</p>`;
+          button.disabled=false;button.textContent='Retake assessment';
+          window.PuneethAuth?.logEvent?.('assessment_attempt',{phase:id,score:result.score,total:result.maxScore,passed:result.passed,serverCalculated:true});
+        };
+      }
+    }
+  }
 
   window.PuneethPortfolio={init(){const list=document.getElementById('portfolioList'),summary=document.getElementById('portfolioSummary');if(!list||!summary)return;const render=()=>{const e=listLabs().sort((a,b)=>String(b.savedAt).localeCompare(String(a.savedAt)));summary.innerHTML=`<div class="portfolio-stat"><b>${e.length}</b><span>saved labs</span></div><div class="portfolio-stat"><b>${e.filter(x=>x.artifact).length}</b><span>with artifacts</span></div><div class="portfolio-stat"><b>${e.filter(x=>x.checks&&Object.values(x.checks).every(Boolean)).length}</b><span>self-checks complete</span></div>`;list.innerHTML=e.length?e.map(x=>{const lesson=lessonData(x.id)?.[0],fields=Object.entries(x.fields||{}).map(([k,v])=>`<div><b>${esc(k)}</b><p>${esc(v)}</p></div>`).join('');return `<article class="portfolio-card"><div class="eyebrow">${lesson?`PHASE ${lesson.phase} · ${esc(lesson.title)}`:'LAB'}</div><div class="portfolio-meta"><span>${esc(x.type||'Build')}</span><span>${new Date(x.savedAt||Date.now()).toLocaleDateString()}</span></div>${x.artifact?`<div class="artifact-pill">Artifact: ${esc(x.artifact)}</div>`:''}<div class="portfolio-fields">${fields}</div>${lesson?`<a class="btn" href="lesson.html?id=${x.id}">Review lesson →</a>`:''}</article>`}).join(''):'<div class="no-results">No saved lab evidence yet. Complete an engineering lab and save your proof here.</div>'};render();document.getElementById('exportPortfolio')?.addEventListener('click',()=>{const lines=['# AI Engineering by TechSensei — Proof Portfolio','',`Exported: ${new Date().toISOString()}`,'','Self-reported learning evidence; not independently verified.',''];listLabs().forEach(x=>{lines.push(`## ${x.title||x.id}`,`Type: ${x.type||''}`,`Saved: ${x.savedAt||''}`,'',...Object.entries(x.fields||{}).map(([k,v])=>`### ${k}\n${v}`),x.artifact?`### Artifact\n${x.artifact}`:'','');});const blob=new Blob([lines.join('\n')],{type:'text/markdown'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='puneeth-ai-engineering-proof-portfolio.md';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)});document.getElementById('clearPortfolio')?.addEventListener('click',()=>{if(confirm('Clear all locally saved lab evidence?')){Object.keys(localStorage).filter(k=>k.startsWith('puneeth_lab_')).forEach(k=>localStorage.removeItem(k));render()}})}};
+  window.__PUNEETH_APP_READY__=true;
+  window.dispatchEvent(new CustomEvent('puneeth:appready'));
 })();
