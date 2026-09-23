@@ -70,18 +70,6 @@
       }
     }
         const side=document.getElementById('lessonSide');if(side)side.innerHTML=`<div class="side-title">${esc(phase[1])}</div>${phase[3].map((t,i)=>{const lid=`${phase[0]}-${i+1}`;return `<a class="side-link ${lid===data.id?'current':''}" href="lesson.html?id=${lid}${!unlocked?'&preview=1':''}">${prog[lid]?'✓ ':''}${esc(t)}</a>`}).join('')}<a class="side-link" href="assessment.html?phase=${phase[0]}">Assessment →</a><a class="side-link" href="curriculum.html">← Back to curriculum</a>`;
-  }
-      };
-      renderLesson(data);
-      if (protectedIds.has(data.id)) {
-        window.PuneethAppwrite?.getProtectedLesson(data.id).then(result => {
-          if (result.ok) {
-            renderLesson({ ...data, ...result.content });
-          } else {
-            lesson.innerHTML = `<div class="locked-page"><div class="lock-icon">🔐</div><div class="eyebrow">PROTECTED LESSON</div><h1>${esc(data.title)}</h1><p class="lead">Sign in to access the full lesson content. The lesson content is served only after your authenticated session is verified.</p><a class="btn primary" href="account.html">Sign in →</a></div>`;
-          }
-        });
-      }
       };
 
       renderLesson(publicData);
