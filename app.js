@@ -176,6 +176,54 @@
   }
 
   window.PuneethPortfolio={init(){const list=document.getElementById('portfolioList'),summary=document.getElementById('portfolioSummary');if(!list||!summary)return;const render=()=>{const e=listLabs().sort((a,b)=>String(b.savedAt).localeCompare(String(a.savedAt)));summary.innerHTML=`<div class="portfolio-stat"><b>${e.length}</b><span>saved labs</span></div><div class="portfolio-stat"><b>${e.filter(x=>x.artifact).length}</b><span>with artifacts</span></div><div class="portfolio-stat"><b>${e.filter(x=>x.checks&&Object.values(x.checks).every(Boolean)).length}</b><span>self-checks complete</span></div>`;list.innerHTML=e.length?e.map(x=>{const lesson=lessonData(x.id)?.[0],fields=Object.entries(x.fields||{}).map(([k,v])=>`<div><b>${esc(k)}</b><p>${esc(v)}</p></div>`).join('');return `<article class="portfolio-card"><div class="eyebrow">${lesson?`PHASE ${lesson.phase} · ${esc(lesson.title)}`:'LAB'}</div><div class="portfolio-meta"><span>${esc(x.type||'Build')}</span><span>${new Date(x.savedAt||Date.now()).toLocaleDateString()}</span></div>${x.artifact?`<div class="artifact-pill">Artifact: ${esc(x.artifact)}</div>`:''}<div class="portfolio-fields">${fields}</div>${lesson?`<a class="btn" href="lesson.html?id=${x.id}">Review lesson →</a>`:''}</article>`}).join(''):'<div class="no-results">No saved lab evidence yet. Complete an engineering lab and save your proof here.</div>'};render();document.getElementById('exportPortfolio')?.addEventListener('click',()=>{const lines=['# AI Engineering by TechSensei — Proof Portfolio','',`Exported: ${new Date().toISOString()}`,'','Self-reported learning evidence; not independently verified.',''];listLabs().forEach(x=>{lines.push(`## ${x.title||x.id}`,`Type: ${x.type||''}`,`Saved: ${x.savedAt||''}`,'',...Object.entries(x.fields||{}).map(([k,v])=>`### ${k}\n${v}`),x.artifact?`### Artifact\n${x.artifact}`:'','');});const blob=new Blob([lines.join('\n')],{type:'text/markdown'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='puneeth-ai-engineering-proof-portfolio.md';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)});document.getElementById('clearPortfolio')?.addEventListener('click',()=>{if(confirm('Clear all locally saved lab evidence?')){Object.keys(localStorage).filter(k=>k.startsWith('puneeth_lab_')).forEach(k=>localStorage.removeItem(k));render()}})}};
+  function tutorContext() {
+    const params = new URLSearchParams(location.search);
+    const lessonId = params.get('id') || params.get('lessonId') || '';
+    let title = document.title || 'AI Engineering by TechSensei';
+    try { const h=document.querySelector('h1'); if(h?.textContent?.trim()) title=h.textContent.trim(); } catch {}
+    return { lessonId, pageTitle:title.slice(0,200) };
+  }
+  function initTutor() {
+    if(document.getElementById('puneethTutor')) return;
+    const root=document.createElement('aside');
+    root.id='puneethTutor';
+    root.className='puneeth-tutor';
+    root.innerHTML=`
+      <button class="tutor-launch" id="tutorLaunch" aria-label="Open Puneeth AI Tutor" aria-expanded="false"><span class="tutor-orb">✦</span><span class="tutor-launch-text">AI Tutor</span></button>
+      <section class="tutor-panel" id="tutorPanel" aria-label="Puneeth AI Tutor">
+        <header class="tutor-header"><div><b>✦ Puneeth AI Tutor</b><span>Learn · Build · Debug · Grow</span></div><button id="tutorClose" aria-label="Close tutor">×</button></header>
+        <div class="tutor-modes" role="tablist"><button data-tutor-mode="tutor" class="active">Tutor</button><button data-tutor-mode="practice">Practice</button><button data-tutor-mode="engineering">Engineering</button></div>
+        <div class="tutor-messages" id="tutorMessages"><div class="tutor-msg assistant"><b>Hi! I'm your AI tutor.</b><br>Ask me about this lesson, a concept, code, debugging, projects, or what to learn next.</div></div>
+        <div class="tutor-suggestions"><button data-tutor-prompt="Explain what I'm learning here in simple terms.">Explain this</button><button data-tutor-prompt="Give me a small practice challenge without the answer.">Practice</button><button data-tutor-prompt="What should I understand before moving on?">What's next?</button></div>
+        <form class="tutor-form" id="tutorForm"><textarea id="tutorInput" rows="2" maxlength="4000" placeholder="Ask your tutor anything…"></textarea><button type="submit" id="tutorSend" aria-label="Send">↑</button></form>
+        <div class="tutor-foot">Your tutor uses your signed-in learning context. Never share passwords or API keys.</div>
+      </section>`;
+    document.body.appendChild(root);
+    const launch=root.querySelector('#tutorLaunch'), panel=root.querySelector('#tutorPanel'), close=root.querySelector('#tutorClose'), messages=root.querySelector('#tutorMessages'), form=root.querySelector('#tutorForm'), input=root.querySelector('#tutorInput'), send=root.querySelector('#tutorSend');
+    let mode='tutor', history=[];
+    const scroll=()=>{messages.scrollTop=messages.scrollHeight};
+    const add=(role,text)=>{const el=document.createElement('div');el.className='tutor-msg '+role;el.innerHTML=role==='assistant'?esc(text).replaceAll('\\n','<br>'):esc(text);messages.appendChild(el);scroll();return el};
+    const open=()=>{panel.classList.add('open');launch.setAttribute('aria-expanded','true');setTimeout(()=>input.focus(),80)};
+    launch.onclick=open; close.onclick=()=>{panel.classList.remove('open');launch.setAttribute('aria-expanded','false')};
+    root.querySelectorAll('[data-tutor-mode]').forEach(btn=>btn.onclick=()=>{root.querySelectorAll('[data-tutor-mode]').forEach(x=>x.classList.remove('active'));btn.classList.add('active');mode=btn.dataset.tutorMode});
+    root.querySelectorAll('[data-tutor-prompt]').forEach(btn=>btn.onclick=()=>{open();input.value=btn.dataset.tutorPrompt;input.focus()});
+    form.onsubmit=async(e)=>{
+      e.preventDefault(); const message=input.value.trim(); if(!message||send.disabled)return;
+      if(!window.PuneethAuth?.client?.()){open();add('assistant','Please sign in first so I can safely use your learning context.');return}
+      add('user',message); input.value=''; send.disabled=true; send.textContent='…';
+      const thinking=add('assistant','Thinking…'); thinking.classList.add('thinking');
+      const ctx=tutorContext();
+      const result=await window.PuneethAppwrite?.sendTutorMessage?.({message,mode,history,lessonId:ctx.lessonId,pageTitle:ctx.pageTitle});
+      thinking.remove();
+      if(result?.ok){
+        add('assistant',result.reply);
+        history=[...history,{role:'user',content:message},{role:'assistant',content:result.reply}].slice(-8);
+      } else add('assistant',result?.error||'I could not reach the tutor right now. Please try again.');
+      send.disabled=false;send.textContent='↑';input.focus();
+    };
+  }
+  initTutor();
+
   window.__PUNEETH_APP_READY__=true;
   window.dispatchEvent(new CustomEvent('puneeth:appready'));
 })();
