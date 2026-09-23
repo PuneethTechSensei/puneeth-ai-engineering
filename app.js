@@ -3,8 +3,10 @@
   const assessmentKey='puneeth-ai-assessments-v2';
   let serverState=null;
 
-  const getProgress=()=>serverState?.authenticated ? (serverState.lessonProgress||{}) : {};
-  const getAssessments=()=>serverState?.authenticated ? (serverState.passedAssessments||{}) : {};
+  const localProgress=()=>{try{return JSON.parse(localStorage.getItem(progressKey)||'{}')}catch{return{}}};
+  const localAssessments=()=>{try{return JSON.parse(localStorage.getItem(assessmentKey)||'{}')}catch{return{}}};
+  const getProgress=()=>serverState?.authenticated ? (serverState.lessonProgress||{}) : localProgress();
+  const getAssessments=()=>serverState?.authenticated ? (serverState.passedAssessments||{}) : localAssessments();
   const saveProgress=p=>{localStorage.setItem(progressKey,JSON.stringify(p));window.dispatchEvent(new CustomEvent('puneeth:progress',{detail:{progress:p}}));};
   const saveAssessments=p=>{localStorage.setItem(assessmentKey,JSON.stringify(p));window.dispatchEvent(new CustomEvent('puneeth:assessment',{detail:{assessments:p}}));};
   const authenticated=()=>serverState?.authenticated===true;
@@ -24,7 +26,7 @@
   const completedLessons=phase=>phase[3].filter((_,i)=>getProgress()[`${phase[0]}-${i+1}`]).length;
   const assessmentPassed=id=>getAssessments()[id]===true;
   const phaseComplete=id=>{const p=phases.find(x=>x[0]===id);return !!p&&completedLessons(p)===p[3].length&&assessmentPassed(id)};
-  const phaseUnlocked=id=>String(id)==='00'||serverState?.unlockedPhases?.includes?.(String(id))||false;
+  const phaseUnlocked=id=>serverState?.authenticated ? (String(id)==='00'||serverState.unlockedPhases?.includes?.(String(id))||false) : (String(id)==='00'||!!localAssessments()[String(id)-1]);
   const overallStats=()=>{const total=phases.reduce((n,p)=>n+p[3].length,0);const done=Object.values(getProgress()).filter(Boolean).length;const unlocked=phases.filter(p=>phaseUnlocked(p[0])).length;return{total,done,unlocked,percent:total?Math.round(done/total*100):0}};
   const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
   const labKey=id=>`puneeth_lab_${id}`;
