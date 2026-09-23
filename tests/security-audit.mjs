@@ -10,7 +10,7 @@ mustExist("auth.js");
 mustExist("appwrite.js");
 mustExist("practice.js");
 mustExist("portfolio.js");
-mustExist("functions/submit-assessment/src/main.js");
+mustExist("functions/submit-assessment/src/main.cjs");
 mustExist("functions/submit-assessment/src/curriculum.js");
 mustExist("functions/get-protected-lesson/src/main.js");
 mustExist("vercel-build.js");
@@ -52,7 +52,7 @@ assert.ok(protectedFn.includes("SUPABASE_PUBLISHABLE_KEY"));
 assert.ok(protectedFn.includes("phase_unlocks"));
 assert.ok(!/x-supabase-url|x-supabase-publishable-key/.test(protectedFn), "Protected lesson function trusts client Supabase configuration");
 
-const gateFn = read("functions/submit-assessment/src/main.js");
+const gateFn = read("functions/submit-assessment/src/main.cjs");
 for (const marker of ["SUPABASE_URL","SUPABASE_PUBLISHABLE_KEY","PASS_PERCENT","practice_questions","practice_answer_keys","phase_unlocks","learner_progress","lesson_evidence","quiz_attempts","OPENAI_API_KEY","tutor.chat","/v1/responses"]) {
   assert.ok(gateFn.includes(marker), "Learner gate missing " + marker);
 }
@@ -64,9 +64,9 @@ const build = read("vercel-build.js");
 assert.ok(build.includes("'functions'"));
 assert.ok(build.includes("'tests'"));
 assert.ok(build.includes("'scripts'"));
-assert.ok(!read("functions/submit-assessment/src/main.js").includes("x-supabase-url"));
+assert.ok(!read("functions/submit-assessment/src/main.cjs").includes("x-supabase-url"));
 assert.ok(!read("functions/get-protected-lesson/src/main.js").includes("x-supabase-url"));
-assert.ok(read("functions/submit-assessment/src/main.js").includes('require("node-appwrite")'));
+assert.ok(read("functions/submit-assessment/src/main.cjs").includes('require("node-appwrite")'));
 assert.ok(read("functions/get-protected-lesson/src/main.js").includes('require("node-appwrite")'));
 
 const pages = ["about.html","account.html","agent-atlas.html","assessment.html","creator.html","curriculum.html","dashboard.html","glossary.html","index.html","lesson.html","paths.html","portfolio.html","privacy.html","roadmap.html"];
