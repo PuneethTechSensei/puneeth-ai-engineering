@@ -42,6 +42,14 @@
   async function saveLessonEvidence(payload){ return execute(cfg.submitAssessmentFunctionId,{method:"POST",path:"/",body:JSON.stringify({...payload,action:"lesson.evidence"})}); }
   async function completeLesson(payload){ return execute(cfg.submitAssessmentFunctionId,{method:"POST",path:"/",body:JSON.stringify({...payload,action:"lesson.complete"})}); }
 
+  async function sendTutorMessage(payload) {
+    return execute(cfg.submitAssessmentFunctionId, {
+      method:"POST",
+      path:"/",
+      body:JSON.stringify({...payload,action:"tutor.chat"})
+    });
+  }
+
   async function getProtectedLesson(lessonId,version="v1") {
     if (!functions || !cfg.protectedLessonFunctionId) return {ok:false,status:503,error:"Protected lesson service is not configured."};
     const headers=await sessionHeaders();
@@ -56,5 +64,5 @@
     } catch(error) { console.warn("Protected lesson call failed:",error); return {ok:false,status:500,error:error?.message||"protected-lesson-failed"}; }
   }
 
-  window.PuneethAppwrite={configured:()=>configured,getLearningState,getAssessmentQuestions,getPracticeQuestions,submitQuiz,saveLessonEvidence,completeLesson,getProtectedLesson};
+  window.PuneethAppwrite={configured:()=>configured,getLearningState,getAssessmentQuestions,getPracticeQuestions,submitQuiz,saveLessonEvidence,completeLesson,getProtectedLesson,sendTutorMessage};
 })();
