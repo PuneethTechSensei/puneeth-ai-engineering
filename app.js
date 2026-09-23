@@ -4,9 +4,8 @@
   let serverState=null;
 
   const localProgress=()=>{try{return JSON.parse(localStorage.getItem(progressKey)||'{}')}catch{return{}}};
-  const localAssessments=()=>{try{return JSON.parse(localStorage.getItem(assessmentKey)||'{}')}catch{return{}}};
-  const getProgress=()=>serverState?.authenticated ? (serverState.lessonProgress||{}) : localProgress();
-  const getAssessments=()=>serverState?.authenticated ? (serverState.passedAssessments||{}) : localAssessments();
+  const getProgress=()=>serverState?.authenticated ? (serverState.lessonProgress||{}) : {};
+  const getAssessments=()=>serverState?.authenticated ? (serverState.passedAssessments||{}) : {};
   const authenticated=()=>serverState?.authenticated===true;
   const refreshServerState=async()=>{
     if(!window.PuneethAppwrite?.configured?.()) return;
@@ -24,7 +23,7 @@
   const completedLessons=phase=>phase[3].filter((_,i)=>getProgress()[`${phase[0]}-${i+1}`]).length;
   const assessmentPassed=id=>getAssessments()[id]===true;
   const phaseComplete=id=>{const p=phases.find(x=>x[0]===id);return !!p&&completedLessons(p)===p[3].length&&assessmentPassed(id)};
-  const phaseUnlocked=id=>serverState?.authenticated ? (String(id)==='00'||serverState.unlockedPhases?.includes?.(String(id))||false) : (String(id)==='00'||localAssessments()[String(id)]===true);
+  const phaseUnlocked=id=>serverState?.authenticated === true && (String(id)==='00'||serverState.unlockedPhases?.includes?.(String(id))||false);
   const overallStats=()=>{const total=phases.reduce((n,p)=>n+p[3].length,0);const done=Object.values(getProgress()).filter(Boolean).length;const unlocked=phases.filter(p=>phaseUnlocked(p[0])).length;return{total,done,unlocked,percent:total?Math.round(done/total*100):0}};
   const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
   const labKey=id=>`puneeth_lab_${id}`;
