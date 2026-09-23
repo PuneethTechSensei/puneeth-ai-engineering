@@ -59,8 +59,13 @@ assert.ok(/response\(res,.*result/.test(gateFn), "Learner gate response path mis
 const build = read("vercel-build.js");
 assert.ok(build.includes("'functions'"));
 assert.ok(build.includes("'tests'"));
+assert.ok(build.includes("'scripts'"));
+assert.ok(!read("functions/submit-assessment/src/main.js").includes("x-supabase-url"));
+assert.ok(!read("functions/get-protected-lesson/src/main.js").includes("x-supabase-url"));
+assert.ok(read("functions/submit-assessment/src/main.js").includes('import sdk from "node-appwrite";'));
+assert.ok(read("functions/get-protected-lesson/src/main.js").includes('import sdk from "node-appwrite";'));
 
-const pages = ["index.html","curriculum.html","dashboard.html","lesson.html","assessment.html","portfolio.html"];
+const pages = ["about.html","account.html","agent-atlas.html","assessment.html","creator.html","curriculum.html","dashboard.html","glossary.html","index.html","lesson.html","paths.html","portfolio.html","privacy.html","roadmap.html"];
 for (const page of pages) {
   const html = read(page);
   const positions = ["auth.js","appwrite.js","data.js","app.js"].map(x => html.indexOf(x));
@@ -69,6 +74,8 @@ for (const page of pages) {
 }
 assert.ok(read("assessment.html").indexOf("practice.js") > read("assessment.html").indexOf("app.js"));
 assert.ok(read("portfolio.html").indexOf("portfolio.js") > read("portfolio.html").indexOf("app.js"));
+assert.ok(read("account.html").indexOf("account.js") > read("account.html").indexOf("auth.js"));
+assert.ok(!fs.existsSync("public/practice-data.js"), "Deleted practice dataset was regenerated");
 
 if (fs.existsSync("public/data.js")) {
   const built = read("public/data.js");
