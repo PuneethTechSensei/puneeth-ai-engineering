@@ -26,7 +26,7 @@ jobs:
           node --check app.js
           node --check practice.js
           node --check portfolio.js
-          node --check functions/submit-assessment/src/main.js
+          node --check functions/submit-assessment/src/main.cjs
           node --check functions/submit-assessment/src/curriculum.js
           node --check functions/get-protected-lesson/src/main.js
           node --check vercel-build.js
