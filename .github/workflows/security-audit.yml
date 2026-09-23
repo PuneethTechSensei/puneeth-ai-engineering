@@ -1,0 +1,38 @@
+name: Security Audit
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [security/content-protection-v1]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Syntax check
+        run: |
+          node --check data.js
+          node --check auth.js
+          node --check appwrite.js
+          node --check app.js
+          node --check practice.js
+          node --check portfolio.js
+          node --check functions/submit-assessment/src/main.cjs
+          node --check functions/submit-assessment/src/curriculum.js
+          node --check functions/get-protected-lesson/src/main.js
+          node --check vercel-build.js
+      - name: Static security audit
+        run: node tests/security-audit.mjs
+      - name: Verify production bundle
+        run: |
+          node vercel-build.js
+          node tests/security-audit.mjs

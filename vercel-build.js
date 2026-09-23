@@ -17,7 +17,7 @@ fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out, { recursive: true });
 
 for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
-  if (entry.name === 'public' || entry.name === '.git' || entry.name === 'node_modules') continue;
+  if (['public', '.git', 'node_modules', 'functions', 'tests', 'scripts', '.github'].includes(entry.name)) continue;
   const src = path.join(root, entry.name);
   const dest = path.join(out, entry.name);
   fs.cpSync(src, dest, { recursive: true });

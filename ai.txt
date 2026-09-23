@@ -1,0 +1,8 @@
+# AI ENGINEERING BY TECHSENSEI — AI ACCESS POLICY
+
+Owner: TechSensei
+Site: https://puneeth-ai-engineering.vercel.app/
+
+Automated AI training, dataset collection, bulk content extraction, and automated reproduction of lesson content are not authorized for this site.
+
+This policy complements robots.txt. It is a policy signal, not an authentication mechanism. Protected lesson delivery is being implemented separately.
