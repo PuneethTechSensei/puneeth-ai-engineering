@@ -62,8 +62,8 @@ assert.ok(build.includes("'tests'"));
 assert.ok(build.includes("'scripts'"));
 assert.ok(!read("functions/submit-assessment/src/main.js").includes("x-supabase-url"));
 assert.ok(!read("functions/get-protected-lesson/src/main.js").includes("x-supabase-url"));
-assert.ok(read("functions/submit-assessment/src/main.js").includes('import sdk from "node-appwrite";'));
-assert.ok(read("functions/get-protected-lesson/src/main.js").includes('import sdk from "node-appwrite";'));
+assert.ok(read("functions/submit-assessment/src/main.js").includes('require("node-appwrite")'));
+assert.ok(read("functions/get-protected-lesson/src/main.js").includes('require("node-appwrite")'));
 
 const pages = ["about.html","account.html","agent-atlas.html","assessment.html","creator.html","curriculum.html","dashboard.html","glossary.html","index.html","lesson.html","paths.html","portfolio.html","privacy.html","roadmap.html"];
 for (const page of pages) {
