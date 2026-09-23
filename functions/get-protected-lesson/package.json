@@ -1,7 +1,6 @@
 {
   "name": "get-protected-lesson",
   "private": true,
-  "type": "module",
   "dependencies": {
     "node-appwrite": "^17.0.0"
   }
