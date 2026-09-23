@@ -7,8 +7,6 @@
   const localAssessments=()=>{try{return JSON.parse(localStorage.getItem(assessmentKey)||'{}')}catch{return{}}};
   const getProgress=()=>serverState?.authenticated ? (serverState.lessonProgress||{}) : localProgress();
   const getAssessments=()=>serverState?.authenticated ? (serverState.passedAssessments||{}) : localAssessments();
-  const saveProgress=p=>{localStorage.setItem(progressKey,JSON.stringify(p));window.dispatchEvent(new CustomEvent('puneeth:progress',{detail:{progress:p}}));};
-  const saveAssessments=p=>{localStorage.setItem(assessmentKey,JSON.stringify(p));window.dispatchEvent(new CustomEvent('puneeth:assessment',{detail:{assessments:p}}));};
   const authenticated=()=>serverState?.authenticated===true;
   const refreshServerState=async()=>{
     if(!window.PuneethAppwrite?.configured?.()) return;
