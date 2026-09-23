@@ -1,4 +1,5 @@
 import { Client, TablesDB, Query, ID } from "node-appwrite";
+import { createHash } from "node:crypto";
 
 const DATABASE_ID = process.env.APPWRITE_DATABASE_ID || "ai-engineering";
 const QUESTIONS_TABLE = "practice_questions";
@@ -69,6 +70,10 @@ async function authenticate(req) {
   if (!result.ok) return { error: "Authentication required.", status: 401 };
   const user = await result.json().catch(() => null);
   return user?.id ? { user } : { error: "Authentication required.", status: 401 };
+}
+
+function stableId(...parts) {
+  return createHash("sha256").update(parts.join(":")).digest("hex").slice(0, 32);
 }
 
 function bodyJson(req) {
@@ -288,12 +293,12 @@ async function submitQuiz(userId, payload) {
       if (index >= 0) {
         let cursor = index + 1;
         while (cursor < ordered.length && CURRICULUM[ordered[cursor]].optional) {
-          await upsertRow(db, UNLOCK_TABLE, userId + "_" + ordered[cursor],
+          await upsertRow(db, UNLOCK_TABLE, stableId("unlock", userId, ordered[cursor]),
             { userId, phaseId: ordered[cursor], reason: "phase-assessment-complete", sourceAttemptId: attemptId, unlockedAt: new Date().toISOString() });
           cursor += 1;
         }
         if (cursor < ordered.length) {
-          await upsertRow(db, UNLOCK_TABLE, userId + "_" + ordered[cursor],
+          await upsertRow(db, UNLOCK_TABLE, stableId("unlock", userId, ordered[cursor]),
             { userId, phaseId: ordered[cursor], reason: "phase-assessment-complete", sourceAttemptId: attemptId, unlockedAt: new Date().toISOString() });
         }
       }
@@ -364,7 +369,7 @@ async function saveEvidence(userId, payload) {
   if (Object.values(safeChecks).some(value => !value)) return { error: "Complete every success criterion.", status: 400 };
 
   const db = appwriteClient();
-  const rowId = userId + "_" + lessonId + "_engineering-lab";
+  const rowId = stableId("evidence", userId, lessonId);
   await upsertRow(db, EVIDENCE_TABLE, rowId, {
     userId,
     lessonId,
@@ -395,7 +400,7 @@ async function completeLesson(userId, payload) {
   ], 10);
   if (!evidenceRows.length) return { error: "Save the lesson evidence before completing the lesson.", status: 400 };
 
-  const rowId = userId + "_" + lessonId;
+  const rowId = stableId("progress", userId, lessonId);
   await upsertRow(db, PROGRESS_TABLE, rowId, {
     userId,
     lessonId,
@@ -459,9 +464,9 @@ async function handle({ req, res, error }) {
     const action = String(body.action || req.query?.action || "");
 
     try {
-      if (action === "quiz.submit") return response(res, { ok: true, ...(await submitQuiz(userId, body)) });
-      if (action === "lesson.evidence") return response(res, { ok: true, ...(await saveEvidence(userId, body)) });
-      if (action === "lesson.complete") return response(res, { ok: true, ...(await completeLesson(userId, body)) });
+      if (action === "quiz.submit") { const result = await submitQuiz(userId, body); if (result?.error) return fail(res, "REQUEST_REJECTED", result.error, result.status || 400); return response(res, { ok: true, ...result }); }
+      if (action === "lesson.evidence") { const result = await saveEvidence(userId, body); if (result?.error) return fail(res, "REQUEST_REJECTED", result.error, result.status || 400); return response(res, { ok: true, ...result }); }
+      if (action === "lesson.complete") { const result = await completeLesson(userId, body); if (result?.error) return fail(res, "REQUEST_REJECTED", result.error, result.status || 400); return response(res, { ok: true, ...result }); }
       return fail(res, "INVALID_ACTION", "Unknown action.", 400);
     } catch (e) {
       error("Learner gate operation failed: " + (e?.message || e));
