@@ -4,5 +4,6 @@ window.PUNEETH_APPWRITE = {
   databaseId: "ai-engineering",
   practiceQuestionsTableId: "practice_questions",
   quizAttemptsTableId: "quiz_attempts",
-  submitAssessmentFunctionId: "submit-assessment"
+  submitAssessmentFunctionId: "submit-assessment",
+  protectedLessonFunctionId: "get-protected-lesson"
 };
