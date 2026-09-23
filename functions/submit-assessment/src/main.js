@@ -1,6 +1,6 @@
 import sdk from "node-appwrite";
 const { Client, TablesDB, Query, ID } = sdk;
-import { createHash } from "node:crypto";
+const { createHash } = require("node:crypto");
 
 const DATABASE_ID = process.env.APPWRITE_DATABASE_ID || "ai-engineering";
 const QUESTIONS_TABLE = "practice_questions";
@@ -489,4 +489,4 @@ export default async (ctx) => {
 };
 
 // Kept separate from the handler so the curriculum is auditable without lesson content.
-import { CURRICULUM } from "./curriculum.js";
+const { CURRICULUM } = require("./curriculum.js");
