@@ -48,12 +48,12 @@ function appwriteClient() {
 }
 
 async function authenticate(req) {
-  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-    return { error: "Authentication service is not configured.", status: 503 };
-  }
   const raw = req.headers?.authorization || req.headers?.Authorization || "";
   const match = /^Bearer\s+(.+)$/i.exec(raw);
   if (!match) return { error: "Authentication required.", status: 401 };
+  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+    return { error: "Authentication service is not configured.", status: 503 };
+  }
 
   let result;
   try {
