@@ -2,107 +2,113 @@
   const cfg = window.PUNEETH_APPWRITE || {};
   const configured = Boolean(cfg.endpoint && cfg.projectId && window.Appwrite);
   let functions = null;
+  let tablesDB = null;
 
   if (configured) {
     const client = new Appwrite.Client()
       .setEndpoint(cfg.endpoint)
       .setProject(cfg.projectId);
     functions = new Appwrite.Functions(client);
+    tablesDB = new Appwrite.TablesDB(client);
   }
 
-  function parseExecution(execution) {
-    let body = {};
-    try { body = JSON.parse(execution?.responseBody || '{}'); } catch (_) {}
-    return { status: Number(execution?.responseStatusCode || 200), body };
+  async function supabaseHeaders() {
+    const sb = window.PuneethAuth?.client?.();
+    const supabaseCfg = window.PUNEETH_SUPABASE || {};
+    if (!sb) return { ok:false, reason:"not-authenticated" };
+    const { data: { session } = {} } = await sb.auth.getSession();
+    if (!session?.access_token) return { ok:false, reason:"not-authenticated" };
+    if (!supabaseCfg.url || !supabaseCfg.publishableKey) return { ok:false, reason:"supabase-not-configured" };
+    return {
+      ok:true,
+      headers:{
+        Authorization:"Bearer " + session.access_token,
+        "x-supabase-url":supabaseCfg.url,
+        "x-supabase-publishable-key":supabaseCfg.publishableKey
+      }
+    };
   }
 
-  async function sessionHeaders() {
-    const client = window.PuneethAuth?.client?.();
-    if (!client) return null;
-    try {
-      const { data: { session } } = await client.auth.getSession();
-      return session?.access_token ? { Authorization: 'Bearer ' + session.access_token } : null;
-    } catch (_) {
-      return null;
+  async function executeFunction(functionId,{method="POST",path="/",body="",auth=true}={}) {
+    if (!functions || !functionId) return { ok:false, reason:"not-configured" };
+    const headers={};
+    if (body) headers["content-type"]="application/json";
+    if (auth) {
+      const authResult=await supabaseHeaders();
+      if (!authResult.ok) return authResult;
+      Object.assign(headers,authResult.headers);
     }
-  }
-
-  async function execute(path, method = 'GET', payload = null) {
-    if (!functions || !cfg.submitAssessmentFunctionId) return { ok: false, status: 503, error: 'not-configured' };
-    const headers = await sessionHeaders();
-    if (!headers) return { ok: false, status: 401, error: 'Authentication required' };
-
     try {
-      const execution = await functions.createExecution({
-        functionId: cfg.submitAssessmentFunctionId,
-        body: method === 'GET' ? '' : JSON.stringify(payload || {}),
-        async: false,
-        path,
-        method,
-        headers: method === 'GET' ? headers : { ...headers, 'content-type': 'application/json' }
+      const execution=await functions.createExecution({
+        functionId, body, async:false, method, path, headers
       });
-      const parsed = parseExecution(execution);
-      return { ok: parsed.status < 400 && parsed.body?.ok !== false, status: parsed.status, ...parsed.body };
+      let responseBody={};
+      try { responseBody=JSON.parse(execution.responseBody||"{}"); } catch (_) {}
+      return { ok:execution.responseStatusCode<400, status:execution.responseStatusCode, ...responseBody };
     } catch (error) {
-      console.warn('Learner gate request failed:', error);
-      return { ok: false, status: 500, error: error?.message || 'request-failed' };
+      console.warn("Appwrite function execution failed:",error);
+      return { ok:false, reason:error?.message||"execution-failed" };
     }
   }
 
-  async function getLearningState() {
-    return execute('/?action=state', 'GET');
+  async function currentUser() {
+    const sb=window.PuneethAuth?.client?.();
+    if (!sb) return null;
+    try { const {data:{user}}=await sb.auth.getUser(); return user||null; } catch (_) { return null; }
   }
 
-  async function getAssessmentQuestions(phaseId) {
-    return execute('/?action=questions&kind=assessment&phaseId=' + encodeURIComponent(phaseId), 'GET');
+  async function getProtectedLesson(lessonId,version="v1") {
+    return executeFunction(cfg.protectedLessonFunctionId,{
+      method:"GET",
+      path:"/?lessonId="+encodeURIComponent(lessonId)+"&version="+encodeURIComponent(version),
+      auth:true
+    }).then(r=>r.ok?{ok:true,content:r.content}:r);
   }
 
-  async function getPracticeQuestions(quizId) {
-    return execute('/?action=questions&kind=practice&quizId=' + encodeURIComponent(quizId), 'GET');
+  async function completeLesson(lessonId) {
+    return executeFunction(cfg.learnerProgressFunctionId,{
+      body:JSON.stringify({lessonId,status:"completed"}),
+      method:"POST",
+      path:"/",
+      auth:true
+    }).then(r=>r.ok?{ok:true,progress:r.progress||null}:r);
   }
 
-  async function saveLessonEvidence(payload) {
-    return execute('/?action=lesson.evidence', 'POST', payload);
+  async function submitAssessment(payload) {
+    return executeFunction(cfg.submitAssessmentFunctionId,{
+      body:JSON.stringify(payload),
+      method:"POST",
+      path:"/",
+      auth:true
+    }).then(r=>r.ok?{ok:true,...r}:r);
   }
 
-  async function completeLesson(payload) {
-    return execute('/?action=lesson.complete', 'POST', payload);
-  }
-
-  async function submitQuiz(payload) {
-    return execute('/?action=quiz.submit', 'POST', payload);
-  }
-
-  async function getProtectedLesson(lessonId, version = 'v1') {
-    if (!functions || !cfg.protectedLessonFunctionId) return { ok: false, status: 503, error: 'not-configured' };
-    const headers = await sessionHeaders();
-    if (!headers) return { ok: false, status: 401, error: 'Authentication required' };
-
+  async function listPublicPracticeQuestions(quizId,version="v1") {
+    if (!tablesDB || !cfg.practiceQuestionsTableId) return [];
     try {
-      const execution = await functions.createExecution({
-        functionId: cfg.protectedLessonFunctionId,
-        body: '',
-        async: false,
-        method: 'GET',
-        path: '/?lessonId=' + encodeURIComponent(lessonId) + '&version=' + encodeURIComponent(version),
-        headers
+      const result=await tablesDB.listRows({
+        databaseId:cfg.databaseId,
+        tableId:cfg.practiceQuestionsTableId,
+        queries:[
+          Appwrite.Query.equal("quizId",[quizId]),
+          Appwrite.Query.equal("version",[version]),
+          Appwrite.Query.limit(100)
+        ],
+        total:false
       });
-      const parsed = parseExecution(execution);
-      return { ok: parsed.status < 400 && Boolean(parsed.body?.content), status: parsed.status, ...parsed.body };
-    } catch (error) {
-      console.warn('Protected lesson load failed:', error);
-      return { ok: false, status: 500, error: error?.message || 'lesson-load-failed' };
+      return result.rows||[];
+    } catch(error) {
+      console.warn("Public practice question load failed:",error);
+      return [];
     }
   }
 
-  window.PuneethAppwrite = {
-    configured: () => configured,
-    getLearningState,
-    getAssessmentQuestions,
-    getPracticeQuestions,
-    saveLessonEvidence,
+  window.PuneethAppwrite={
+    configured:()=>configured,
+    currentUser,
+    getProtectedLesson,
     completeLesson,
-    submitQuiz,
-    getProtectedLesson
+    submitAssessment,
+    listPublicPracticeQuestions
   };
 })();
