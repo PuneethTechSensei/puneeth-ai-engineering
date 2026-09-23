@@ -1,4 +1,5 @@
-import { Client, TablesDB, Query, ID } from "node-appwrite";
+import sdk from "node-appwrite";
+const { Client, TablesDB, Query, ID } = sdk;
 import { createHash } from "node:crypto";
 
 const DATABASE_ID = process.env.APPWRITE_DATABASE_ID || "ai-engineering";
