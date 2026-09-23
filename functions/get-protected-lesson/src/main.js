@@ -3,8 +3,6 @@ import { Client, TablesDB, Query } from "node-appwrite";
 const DATABASE_ID = process.env.APPWRITE_DATABASE_ID || "ai-engineering";
 const TABLE_ID = process.env.APPWRITE_LESSONS_TABLE_ID || "protected_lessons_v1";
 const UNLOCK_TABLE = process.env.APPWRITE_UNLOCK_TABLE_ID || "phase_unlocks";
-const SUPABASE_URL = String(process.env.SUPABASE_URL || "").replace(/\/$/, "");
-const SUPABASE_PUBLISHABLE_KEY = String(process.env.SUPABASE_PUBLISHABLE_KEY || "");
 const RATE_WINDOW_MS = 60_000;
 const rateBuckets = new Map();
 
@@ -28,24 +26,29 @@ function allowRate(key, limit) {
 }
 
 async function validateSupabaseSession(req) {
-  const auth = req.headers?.authorization || req.headers?.Authorization || "";
-  const match = /^Bearer\s+(.+)$/i.exec(auth);
-  if (!match) return { error: "Authentication required.", status: 401 };
-  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) return { error: "Authentication service is not configured.", status: 503 };
+  const raw = req.headers?.authorization || req.headers?.Authorization || "";
+  const match = /^Bearer\\s+(.+)$/i.exec(raw);
+  const supabaseUrl = String(req.headers?.["x-supabase-url"] || "").replace(/\\/$/, "");
+  const publishableKey = String(req.headers?.["x-supabase-publishable-key"] || "");
+  if (!match || !supabaseUrl || !publishableKey) return { error: "Authentication required.", status: 401 };
+  if (!/^https:\\/\\/[a-z0-9-]+\\.supabase\\.co$/i.test(supabaseUrl)) return { error: "Invalid authentication service.", status: 401 };
+  if (!publishableKey.startsWith("sb_publishable_")) return { error: "Invalid authentication key.", status: 401 };
 
+  let result;
   try {
-    const result = await fetch(SUPABASE_URL + "/auth/v1/user", {
+    result = await fetch(supabaseUrl + "/auth/v1/user", {
       headers: {
         Authorization: "Bearer " + match[1],
-        apikey: SUPABASE_PUBLISHABLE_KEY
+        apikey: publishableKey
       }
     });
-    if (!result.ok) return { error: "Authentication required.", status: 401 };
-    const user = await result.json().catch(() => null);
-    return user?.id ? { user } : { error: "Authentication required.", status: 401 };
   } catch {
     return { error: "Authentication service unavailable.", status: 503 };
   }
+
+  if (!result.ok) return { error: "Authentication required.", status: 401 };
+  const user = await result.json().catch(() => null);
+  return user?.id ? { user } : { error: "Authentication required.", status: 401 };
 }
 
 function appwriteClient() {
