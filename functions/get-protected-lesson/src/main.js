@@ -1,4 +1,5 @@
-import { Client, TablesDB, Query } from "node-appwrite";
+import sdk from "node-appwrite";
+const { Client, TablesDB, Query } = sdk;
 
 const DATABASE_ID = process.env.APPWRITE_DATABASE_ID || "ai-engineering";
 const TABLE_ID = process.env.APPWRITE_LESSONS_TABLE_ID || "protected_lessons_v1";
