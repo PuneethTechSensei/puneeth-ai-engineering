@@ -44,7 +44,7 @@ export default async ({ req, res, error }) => {
     const client = new Client()
       .setEndpoint(process.env.APPWRITE_FUNCTION_API_ENDPOINT)
       .setProject(process.env.APPWRITE_FUNCTION_PROJECT_ID)
-      .setKey(process.env.APPWRITE_API_KEY);
+      .setKey(process.env.APPWRITE_FUNCTION_API_KEY);
 
     const result = await new TablesDB(client).listRows({
       databaseId: DATABASE_ID,
