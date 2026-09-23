@@ -224,7 +224,7 @@ async function tutorReply(userId, payload) {
     });
     if (!result.ok) {
       const detail = await result.text().catch(()=> "");
-      error?.("OpenAI tutor request failed: "+result.status+" "+detail.slice(0,300));
+      console.error("OpenAI tutor request failed:", result.status, detail.slice(0,300));
       return { error:"The tutor service is temporarily unavailable.", status:502 };
     }
     const data = await result.json();
@@ -233,7 +233,7 @@ async function tutorReply(userId, payload) {
     await audit(db, userId, "tutor_message", lessonId ? lessonId.split("-")[0] : null, lessonId || "site", { mode, model: OPENAI_MODEL });
     return { reply, mode, model: OPENAI_MODEL };
   } catch (e) {
-    error?.("Tutor request failed: "+(e?.message || e));
+    console.error("Tutor request failed:", e?.message || e);
     return { error:"The tutor service is temporarily unavailable.", status:502 };
   }
 }
