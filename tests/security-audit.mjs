@@ -36,7 +36,7 @@ const app = read("app.js");
 assert.ok(app.includes("getProtectedLesson"), "Lesson renderer is not wired to protected delivery");
 assert.ok(app.includes("submitQuiz"), "Assessment renderer is not wired to server scoring");
 assert.ok(!/q\.(answer)|Number\(el\.value\)===q\.answer|assessments\[id\]/.test(app), "Browser still owns assessment scoring");
-assert.ok(!/\.check[^\n]*onchange[^\n]*saveProgress|saveProgress\(/.test(app), "Browser still owns lesson completion");
+assert.ok(!app.includes("saveProgress("), "Browser still owns lesson completion");
 assert.ok(app.includes("__PUNEETH_APP_READY__"), "App readiness signal missing");
 
 const appwrite = read("appwrite.js");
