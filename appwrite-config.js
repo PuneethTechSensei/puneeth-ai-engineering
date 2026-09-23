@@ -5,6 +5,8 @@ window.PUNEETH_APPWRITE = {
   practiceQuestionsTableId: "practice_questions",
   quizAttemptsTableId: "quiz_attempts",
   submitAssessmentFunctionId: "submit-assessment",
+  learningStateFunctionId: "get-learning-state",
+  lessonEvidenceFunctionId: "save-lesson-evidence",
   learnerProgressFunctionId: "update-learner-progress",
   protectedLessonFunctionId: "get-protected-lesson"
 };
