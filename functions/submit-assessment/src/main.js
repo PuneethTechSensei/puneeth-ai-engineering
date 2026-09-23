@@ -10,8 +10,6 @@ const PROGRESS_TABLE = "learner_progress";
 const UNLOCK_TABLE = "phase_unlocks";
 const AUDIT_TABLE = "audit_events";
 const PASS_PERCENT = Math.min(100, Math.max(1, Number.parseInt(process.env.PASS_PERCENT || "80", 10) || 80));
-const SUPABASE_URL = String(process.env.SUPABASE_URL || "").replace(/\/$/, "");
-const SUPABASE_PUBLISHABLE_KEY = String(process.env.SUPABASE_PUBLISHABLE_KEY || "");
 const RATE_WINDOW_MS = 60_000;
 const rateBuckets = new Map();
 
@@ -49,18 +47,19 @@ function appwriteClient() {
 
 async function authenticate(req) {
   const raw = req.headers?.authorization || req.headers?.Authorization || "";
-  const match = /^Bearer\s+(.+)$/i.exec(raw);
-  if (!match) return { error: "Authentication required.", status: 401 };
-  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-    return { error: "Authentication service is not configured.", status: 503 };
-  }
+  const match = /^Bearer\\s+(.+)$/i.exec(raw);
+  const supabaseUrl = String(req.headers?.["x-supabase-url"] || "").replace(/\\/$/, "");
+  const publishableKey = String(req.headers?.["x-supabase-publishable-key"] || "");
+  if (!match || !supabaseUrl || !publishableKey) return { error: "Authentication required.", status: 401 };
+  if (!/^https:\\/\\/[a-z0-9-]+\\.supabase\\.co$/i.test(supabaseUrl)) return { error: "Invalid authentication service.", status: 401 };
+  if (!publishableKey.startsWith("sb_publishable_")) return { error: "Invalid authentication key.", status: 401 };
 
   let result;
   try {
-    result = await fetch(SUPABASE_URL + "/auth/v1/user", {
+    result = await fetch(supabaseUrl + "/auth/v1/user", {
       headers: {
         Authorization: "Bearer " + match[1],
-        apikey: SUPABASE_PUBLISHABLE_KEY
+        apikey: publishableKey
       }
     });
   } catch {
