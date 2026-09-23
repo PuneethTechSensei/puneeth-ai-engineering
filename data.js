@@ -39,12 +39,7 @@ const lessonSpecs = [
       "Failure to diagnose: Move a required file or import and observe how the structure exposes the dependency; fix it without adding a global path hack.",
       "Proof: A repository tree plus one-command setup/run/test instructions that another learner can follow."
     ],
-    "code": "src/
-  app.py
-tests/
-  test_app.py
-pyproject.toml
-README.md",
+    "code": "src/\n  app.py\ntests/\n  test_app.py\npyproject.toml\nREADME.md",
     "practice": "Turn a single-file prototype into a predictable layout and add one command that runs the project checks.",
     "breakIt": "Move a required file or import and observe how the structure exposes the dependency; fix it without adding a global path hack.",
     "proof": "A repository tree plus one-command setup/run/test instructions that another learner can follow.",
