@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Engineering Resource Library · TechSensei</title>
+<meta name="description" content="A curated, free-first library of videos, GitHub repositories, agent guides, and books for learning LLMs, AI agents, MCP, and AI engineering.">
+<meta property="og:title" content="AI Engineering Resource Library · TechSensei">
+<meta property="og:description" content="A curated map of high-value learning resources for LLMs, AI agents, MCP, and production AI engineering.">
+<link rel="stylesheet" href="styles.css">
+<style>
+.resource-hero{padding:clamp(2.5rem,7vw,5.5rem) 0 2rem;max-width:1050px;margin:auto}.resource-hero h1{font-size:clamp(2.5rem,6vw,5rem);line-height:.98;letter-spacing:-.055em;margin:.7rem 0 1rem}.resource-hero h1 em{font-style:normal;color:var(--accent)}.resource-hero .lead{max-width:760px}.resource-banner{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1.4rem}.resource-pill{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.5rem .8rem;font-size:.82rem;color:var(--muted)}.resource-controls{position:sticky;top:0;z-index:5;background:var(--bg);padding:.8rem 0;border-block:1px solid var(--line);display:flex;gap:.7rem;flex-wrap:wrap}.resource-search{flex:1;min-width:220px;border:1px solid var(--line);border-radius:12px;padding:.85rem 1rem;background:var(--surface);color:var(--text);font:inherit}.resource-filter{border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--text);padding:.65rem .9rem;font:inherit;cursor:pointer}.resource-filter[aria-pressed=true]{background:var(--text);color:var(--bg);border-color:var(--text)}.resource-section{max-width:1100px;margin:2.5rem auto}.resource-section-head{display:flex;align-items:end;justify-content:space-between;gap:1rem;margin-bottom:1rem}.resource-section-head h2{margin:.25rem 0;font-size:clamp(1.6rem,3vw,2.3rem);letter-spacing:-.035em}.resource-section-head p{margin:.25rem 0;color:var(--muted);max-width:500px}.resource-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.resource-card{border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:1.2rem;display:flex;flex-direction:column;gap:.65rem;min-width:0;transition:transform .15s ease,border-color .15s ease}.resource-card:hover{transform:translateY(-2px);border-color:var(--accent)}.resource-card-top{display:flex;justify-content:space-between;align-items:center;gap:.6rem}.resource-type{font-size:.72rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}.resource-priority{font-size:.72rem;border-radius:999px;padding:.25rem .5rem;background:var(--soft);color:var(--text);white-space:nowrap}.resource-card h3{font-size:1.1rem;margin:0;letter-spacing:-.02em}.resource-card p{font-size:.92rem;color:var(--muted);margin:0;line-height:1.55}.resource-card a{font-weight:700;text-decoration:none;color:var(--accent);margin-top:auto;overflow-wrap:anywhere}.resource-card a:hover{text-decoration:underline}.resource-recommendation{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin:1.4rem 0 2.4rem}.resource-step{border:1px solid var(--line);border-radius:16px;padding:1rem;background:var(--surface)}.resource-step b{display:block;margin:.4rem 0}.resource-step p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.5}.step-num{font-size:.75rem;font-weight:800;color:var(--accent);letter-spacing:.08em}.resource-note{padding:1rem 1.1rem;border-left:3px solid var(--accent);background:var(--soft);border-radius:0 12px 12px 0;line-height:1.55}.resource-empty{display:none;padding:2rem;text-align:center;color:var(--muted)}.resource-footnote{font-size:.86rem;color:var(--muted);line-height:1.6}.resource-card[hidden],.resource-section[hidden]{display:none!important}
+@media(max-width:700px){.resource-grid{grid-template-columns:1fr}.resource-recommendation{grid-template-columns:1fr}.resource-section-head{display:block}.resource-controls{position:static}.resource-hero{padding-top:2.5rem}body>main{padding-inline:1rem}}
+</style>
+</head>
+<body>
+<header class="top">
+<a class="brand" href="index.html"><span class="mark">P</span><span>AI ENGINEERING BY TECHSENSEI</span></a>
+<nav>
+<a href="curriculum.html">Curriculum</a><a href="paths.html">Learning Paths</a><a href="resources.html" aria-current="page">Resources</a><a href="roadmap.html">Roadmap</a><a href="portfolio.html">Proof Portfolio</a><a href="glossary.html">Glossary</a><a href="about.html">About</a><a href="dashboard.html" class="nav-progress" id="navStats">Progress</a><button id="themeBtn" class="iconbtn" aria-label="Toggle theme">◐</button>
+</nav>
+</header>
+<main class="wrap">
+<section class="resource-hero">
+<div class="eyebrow">THE FIELD GUIDE · CURATED EXTERNAL LEARNING</div>
+<h1>Learn from the best.<br><em>Build your own proof.</em></h1>
+<p class="lead">A curated companion to the Puneeth AI Engineering curriculum: practical videos, open-source repositories, engineering guides, and books covering LLMs, agent design, MCP, evaluation, and production systems.</p>
+<div class="resource-banner"><span class="resource-pill">↗ External resources</span><span class="resource-pill">Free-first learning</span><span class="resource-pill">Build alongside the curriculum</span><span class="resource-pill">Searchable library</span></div>
+</section>
+<section class="resource-section" aria-labelledby="start-here">
+<div class="eyebrow">BEST WAY TO USE THIS LIBRARY</div><h2 id="start-here">A practical learning sequence</h2>
+<div class="resource-recommendation">
+<article class="resource-step"><span class="step-num">01 · UNDERSTAND</span><b>Start with LLMs and agent fundamentals</b><p>Watch one introductory video, then explain the model/tool distinction in your own words before moving on.</p></article>
+<article class="resource-step"><span class="step-num">02 · INSPECT</span><b>Read and run a real repository</b><p>Choose one repo, follow its README, run a small example, and record setup steps plus one failure you diagnosed.</p></article>
+<article class="resource-step"><span class="step-num">03 · ENGINEER</span><b>Apply the production guides</b><p>Use evaluation, tool boundaries, observability, and failure handling as a checklist—not just reading material.</p></article>
+</div>
+<div class="resource-note"><b>Learning rule:</b> Don't try to consume everything. Pick one resource that matches your current lesson, produce a small artifact, and write down what you verified. External links can change; the core curriculum remains the learning path.</div>
+</section>
+<div class="resource-controls" role="search" aria-label="Filter resource library">
+<input id="resourceSearch" class="resource-search" type="search" placeholder="Search topics, titles, or tools…" aria-label="Search resources">
+<button class="resource-filter" data-filter="all" aria-pressed="true">All</button>
+<button class="resource-filter" data-filter="video" aria-pressed="false">Videos</button>
+<button class="resource-filter" data-filter="repo" aria-pressed="false">GitHub repos</button>
+<button class="resource-filter" data-filter="guide" aria-pressed="false">Guides</button>
+<button class="resource-filter" data-filter="book" aria-pressed="false">Books</button>
+</div>
+<div id="resourceEmpty" class="resource-empty">No resources match that search. Try a broader term.</div>
+
+<section class="resource-section" data-section="video">
+<div class="resource-section-head"><div><div class="eyebrow">WATCH · BUILD INTUITION</div><h2>Videos</h2></div><p>Use these for conceptual grounding, then turn the idea into a small implementation.</p></div>
+<div class="resource-grid">
+<article class="resource-card" data-kind="video" data-search="llm introduction large language model basics"><div class="resource-card-top"><span class="resource-type">Video · Fundamentals</span><span class="resource-priority">Start here</span></div><h3>LLM Introduction</h3><p>A first pass at the core concepts behind large language models.</p><a href="https://www.youtube.com/watch?v=zikBMFhNi_g" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a></article>
+<article class="resource-card" data-kind="video" data-search="llms from scratch transformer internals"><div class="resource-card-top"><span class="resource-type">Video · Deep dive</span><span class="resource-priority">Build intuition</span></div><h3>LLMs from Scratch</h3><p>Connect high-level LLM concepts to the machinery underneath.</p><a href="https://www.youtube.com/watch?v=9vM4p9NN0Ts" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a></article>
+<article class="resource-card" data-kind="video" data-search="agentic ai overview stanford agents"><div class="resource-card-top"><span class="resource-type">Video · Agents</span></div><h3>Agentic AI Overview — Stanford</h3><p>Build a mental model for agentic systems and their capabilities.</p><a href="https://www.youtube.com/watch?v=kJLIOGle3Lw" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a></article>
+<article class="resource-card" data-kind="video" data-search="building evaluating agents evaluation"><div class="resource-card-top"><span class="resource-type">Video · Evaluation</span><span class="resource-priority">High value</span></div><h3>Building &amp; Evaluating Agents</h3><p>Focus on how to test agent behavior rather than trusting a successful demo.</p><a href="https://www.youtube.com/watch?v=d5EltXhbcfA" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a></article>
+<article class="resource-card" data-kind="video" data-search="building effective agents design"><div class="resource-card-top"><span class="resource-type">Video · Design</span></div><h3>Building Effective Agents</h3><p>Think through agent architecture and practical design choices.</p><a href="https://www.youtube.com/watch?v=D7_ipDqhtwk" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a></article>
+<article class="resource-card" data-kind="video" data-search="building agents mcp model context protocol tools"><div class="resource-card-top"><span class="resource-type">Video · MCP</span><span class="resource-priority">Relevant to integrations</span></div><h3>Building Agents with MCP</h3><p>Explore how agents connect to external tools and systems through MCP.</p><a href="https://www.youtube.com/watch?v=kQmXtrmQ5Zg" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a></article>
+<article class="resource-card" data-kind="video" data-search="building an agent from scratch hands on"><div class="resource-card-top"><span class="resource-type">Video · Hands-on</span></div><h3>Building an Agent from Scratch</h3><p>Follow a concrete build to connect concepts to implementation.</p><a href="https://www.youtube.com/watch?v=xzXdLRUyjUq" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a></article>
+<article class="resource-card" data-kind="video" data-search="philo agents playlist agent tutorials"><div class="resource-card-top"><span class="resource-type">Playlist · Agents</span></div><h3>Philo Agents</h3><p>A playlist for exploring agent-related ideas across multiple videos.</p><a href="https://www.youtube.com/playlist?list=PLacQJwucIt_sV-tfZmpT1Ov6jdHI30NR" target="_blank" rel="noopener noreferrer">Open playlist ↗</a></article>
+</div></section>
+
+<section class="resource-section" data-section="repo">
+<div class="resource-section-head"><div><div class="eyebrow">READ · RUN · MODIFY</div><h2>GitHub repositories</h2></div><p>Read each README first. Run a minimal example before changing the architecture.</p></div>
+<div class="resource-grid">
+<article class="resource-card" data-kind="repo" data-search="genai agents nirdiamant agent examples"><div class="resource-card-top"><span class="resource-type">Repository · Agents</span></div><h3>GenAI Agents</h3><p>Explore agent implementations and patterns. This repository appeared twice in the supplied list, so it is included once.</p><a href="https://github.com/nirdiamant/GenAI_Agents" target="_blank" rel="noopener noreferrer">Open repository ↗</a></article>
+<article class="resource-card" data-kind="repo" data-search="microsoft ai agents for beginners course"><div class="resource-card-top"><span class="resource-type">Repository · Guided course</span><span class="resource-priority">Beginner-friendly</span></div><h3>Microsoft AI Agents for Beginners</h3><p>A structured, hands-on introduction to AI agent concepts.</p><a href="https://github.com/microsoft/ai-agents-for-beginners" target="_blank" rel="noopener noreferrer">Open repository ↗</a></article>
+<article class="resource-card" data-kind="repo" data-search="prompt engineering guide dair ai prompting"><div class="resource-card-top"><span class="resource-type">Repository · Prompting</span></div><h3>Prompt Engineering Guide</h3><p>Reference techniques for designing, testing, and improving prompts.</p><a href="https://github.com/dair-ai/Prompt-Engineering-Guide" target="_blank" rel="noopener noreferrer">Open repository ↗</a></article>
+<article class="resource-card" data-kind="repo" data-search="hands on large language models llm exercises"><div class="resource-card-top"><span class="resource-type">Repository · LLMs</span></div><h3>Hands-On Large Language Models</h3><p>Practical notebooks and examples for understanding LLM applications.</p><a href="https://github.com/HandsOnLLM/Hands-On-Large-Language-Models" target="_blank" rel="noopener noreferrer">Open repository ↗</a></article>
+<article class="resource-card" data-kind="repo" data-search="made with ml machine learning production engineering"><div class="resource-card-top"><span class="resource-type">Repository · ML engineering</span><span class="resource-priority">Production mindset</span></div><h3>Made With ML</h3><p>Learn engineering practices around data, models, evaluation, and deployment.</p><a href="https://github.com/GokuMohandas/Made-With-ML" target="_blank" rel="noopener noreferrer">Open repository ↗</a></article>
+<article class="resource-card" data-kind="repo" data-search="hands on ai engineering sumanth"><div class="resource-card-top"><span class="resource-type">Repository · AI engineering</span></div><h3>Hands-On AI Engineering</h3><p>A practical collection focused on building AI engineering skills.</p><a href="https://github.com/Sumanth077/Hands-On-AI-Engineering" target="_blank" rel="noopener noreferrer">Open repository ↗</a></article>
+<article class="resource-card" data-kind="repo" data-search="awesome generative ai guide resources"><div class="resource-card-top"><span class="resource-type">Repository · Resource index</span></div><h3>Awesome Generative AI Guide</h3><p>A broad discovery list for generative AI tools, concepts, and learning material.</p><a href="https://github.com/aishwaryanr/awesome-generative-ai-guide" target="_blank" rel="noopener noreferrer">Open repository ↗</a></article>
+<article class="resource-card" data-kind="repo" data-search="designing machine learning systems chip huyen ml systems"><div class="resource-card-top"><span class="resource-type">Repository · ML systems</span><span class="resource-priority">Systems thinking</span></div><h3>Designing Machine Learning Systems</h3><p>Companion material for reasoning about the full ML lifecycle and production constraints.</p><a href="https://github.com/chiphuyen/dmls-book" target="_blank" rel="noopener noreferrer">Open repository ↗</a></article>
+<article class="resource-card" data-kind="repo" data-search="machine learning for beginners microsoft curriculum"><div class="resource-card-top"><span class="resource-type">Repository · Foundations</span></div><h3>Machine Learning for Beginners</h3><p>A guided curriculum for core machine-learning concepts and exercises.</p><a href="https://github.com/microsoft/ML-For-Beginners" target="_blank" rel="noopener noreferrer">Open repository ↗</a></article>
+<article class="resource-card" data-kind="repo" data-search="llm course mlabonne course notebooks"><div class="resource-card-top"><span class="resource-type">Repository · LLM course</span></div><h3>LLM Course</h3><p>A practical course-style repository for studying LLM techniques.</p><a href="https://github.com/mlabonne/llm-course" target="_blank" rel="noopener noreferrer">Open repository ↗</a></article>
+</div></section>
+
+<section class="resource-section" data-section="guide">
+<div class="resource-section-head"><div><div class="eyebrow">DESIGN · EVALUATE · OPERATE</div><h2>Engineering guides</h2></div><p>These are useful when moving from a working demo to a reliable, controllable system.</p></div>
+<div class="resource-grid">
+<article class="resource-card" data-kind="guide" data-search="google kaggle agent whitepaper agentic systems"><div class="resource-card-top"><span class="resource-type">Guide · Concepts</span></div><h3>Google's Agent Whitepaper</h3><p>A conceptual guide to agents and how agentic systems are framed.</p><a href="https://www.kaggle.com/whitepaper-agents" target="_blank" rel="noopener noreferrer">Read guide ↗</a></article>
+<article class="resource-card" data-kind="guide" data-search="google agent companion whitepaper"><div class="resource-card-top"><span class="resource-type">Guide · Companion</span></div><h3>Google's Agent Companion</h3><p>A companion reference to the agent whitepaper.</p><a href="https://www.kaggle.com/whitepaper-agent-companion" target="_blank" rel="noopener noreferrer">Read guide ↗</a></article>
+<article class="resource-card" data-kind="guide" data-search="anthropic building effective agents engineering"><div class="resource-card-top"><span class="resource-type">Guide · Architecture</span><span class="resource-priority">High value</span></div><h3>Building Effective Agents — Anthropic</h3><p>Practical guidance on choosing agent patterns and avoiding unnecessary complexity.</p><a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener noreferrer">Read guide ↗</a></article>
+<article class="resource-card" data-kind="guide" data-search="claude code agentic coding practices best practices"><div class="resource-card-top"><span class="resource-type">Guide · Coding workflow</span></div><h3>Claude Code: Agentic Coding Practices</h3><p>Workflow practices for working effectively with coding agents.</p><a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener noreferrer">Read guide ↗</a></article>
+<article class="resource-card" data-kind="guide" data-search="openai practical guide building agents pdf"><div class="resource-card-top"><span class="resource-type">Guide · Implementation</span><span class="resource-priority">High value</span></div><h3>OpenAI's Practical Guide to Building Agents</h3><p>A practical reference for defining workflows, tools, and guardrails in agent systems.</p><a href="https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf" target="_blank" rel="noopener noreferrer">Read PDF ↗</a></article>
+</div></section>
+
+<section class="resource-section" data-section="book">
+<div class="resource-section-head"><div><div class="eyebrow">GO DEEPER</div><h2>Books &amp; long-form references</h2></div><p>Use these for sustained study after you have enough hands-on context to make the chapters concrete.</p></div>
+<div class="resource-grid">
+<article class="resource-card" data-kind="book" data-search="understanding deep learning udlbook prince"><div class="resource-card-top"><span class="resource-type">Book · Deep learning</span></div><h3>Understanding Deep Learning</h3><p>A detailed treatment of deep-learning foundations, with a free online version.</p><a href="https://udlbook.github.io/udlbook/" target="_blank" rel="noopener noreferrer">Read online ↗</a></article>
+<article class="resource-card" data-kind="book" data-search="building a large language model from scratch sebastian raschka manning"><div class="resource-card-top"><span class="resource-type">Book · LLM internals</span></div><h3>Build a Large Language Model (From Scratch)</h3><p>Work through the components of an LLM with an implementation-oriented approach.</p><a href="https://www.manning.com/books/build-a-large-language-model-from-scratch" target="_blank" rel="noopener noreferrer">View book ↗</a></article>
+<article class="resource-card" data-kind="book" data-search="llm engineers handbook engineering production oreilly"><div class="resource-card-top"><span class="resource-type">Book · LLM engineering</span></div><h3>The LLM Engineering Handbook</h3><p>A longer-form reference for the engineering lifecycle around LLM applications.</p><a href="https://www.oreilly.com/library/view/llm-engineers-handbook/9781836200079/" target="_blank" rel="noopener noreferrer">View book ↗</a></article>
+<article class="resource-card" data-kind="book" data-search="ai agents definitive guide oreilly"><div class="resource-card-top"><span class="resource-type">Book · AI agents</span></div><h3>AI Agents: The Definitive Guide</h3><p>A book-length reference for understanding and building agentic systems.</p><a href="https://www.oreilly.com/library/view/ai-agents-the/0642572247775/" target="_blank" rel="noopener noreferrer">View book ↗</a></article>
+</div></section>
+<section class="resource-section"><p class="resource-footnote"><b>Editorial note:</b> These are third-party resources, not endorsements or required prerequisites. Availability, licensing, and URLs are controlled by their respective publishers. Check the license before reusing code or publishing derivative material. Resource summaries are short orientation notes; follow the source for full details.</p><a class="btn primary" href="curriculum.html">Return to the learning curriculum →</a></section>
+</main>
+<footer><span>© 2026 TechSensei · AI Engineering</span><span>Free core learning · Built for everyone</span></footer>
+<script>
+(function(){
+ const input=document.getElementById('resourceSearch');
+ const buttons=[...document.querySelectorAll('[data-filter]')];
+ const cards=[...document.querySelectorAll('.resource-card')];
+ const sections=[...document.querySelectorAll('[data-section]')];
+ const empty=document.getElementById('resourceEmpty');
+ let filter='all';
+ function render(){
+  const q=(input.value||'').trim().toLowerCase();let visible=0;
+  cards.forEach(card=>{
+   const okKind=filter==='all'||card.dataset.kind===filter;
+   const okText=!q||(card.dataset.search+' '+card.innerText).toLowerCase().includes(q);
+   card.hidden=!(okKind&&okText);if(!card.hidden)visible++;
+  });
+  sections.forEach(section=>{section.hidden=!section.querySelector('.resource-card:not([hidden])')});
+  empty.style.display=visible?'none':'block';
+ }
+ input.addEventListener('input',render);
+ buttons.forEach(btn=>btn.addEventListener('click',()=>{filter=btn.dataset.filter;buttons.forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));render()}));
+ const theme=document.getElementById('themeBtn');
+ theme?.addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('puneeth-theme',next)});
+ const saved=localStorage.getItem('puneeth-theme');if(saved)document.documentElement.dataset.theme=saved;
+})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script><script src="auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/appwrite@23.0.0"></script>
+<script src="appwrite-config.js"></script><script src="appwrite.js"></script>
+<script src="data.js"></script><script src="app.js"></script>
+</body>
+</html>
